@@ -14,7 +14,7 @@ endif()
 
 
 if (NOT ARQMA_DIR)
-    set(ARQMA_DIR ~/stagenet/arqma)
+    set(ARQMA_DIR ~/arqma)
 endif()
 
 message(STATUS ARQMA_DIR ": ${ARQMA_DIR}")
@@ -23,7 +23,7 @@ set(ARQMA_SOURCE_DIR ${ARQMA_DIR}
         CACHE PATH "Path to the root directory for Arqma")
 
 # set location of arqma build tree
-set(ARQMA_BUILD_DIR ${ARQMA_SOURCE_DIR}/build/release/
+set(ARQMA_BUILD_DIR ${ARQMA_SOURCE_DIR}/build/release
         CACHE PATH "Path to the build directory for Arqma")
 
 set(MY_CMAKE_DIR "${CMAKE_CURRENT_LIST_DIR}/cmake"
