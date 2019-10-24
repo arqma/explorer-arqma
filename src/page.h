@@ -1003,7 +1003,7 @@ index2(uint64_t page_no = 0, bool refresh_page = false)
         string emission_fee      = arq_amount_to_str(current_values.fee, "{:0.9f}");
 	string emission_coinbase_human = fmt::format("{:n}", static_cast<int64_t>(current_values.coinbase/1e9));
         string emission_fee_human = fmt::format("{:n}", static_cast<int64_t>(current_values.fee/1e9));
-        
+
         context["emission"] = mstch::map {
                 {"blk_no"    , emission_blk_no},
                 {"amount"    , emission_coinbase},
@@ -1320,8 +1320,11 @@ show_block(uint64_t _blk_height)
 
     // initalise page tempate map with basic info about blockchain
 
-    string blk_pow_hash_str = pod_to_hex(get_block_longhash(blk, _blk_height));
-    uint64_t blk_difficulty = core_storage->get_db().get_block_difficulty(_blk_height);
+    string blk_pow_hash_str = pod_to_hex(get_block_longhash(
+                core_storage, blk, _blk_height, 0));
+
+    cryptonote::difficulty_type blk_difficulty
+        = core_storage->get_db().get_block_difficulty(_blk_height);
 
     mstch::map context {
             {"testnet"              , testnet},

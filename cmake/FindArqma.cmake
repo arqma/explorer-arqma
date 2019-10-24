@@ -30,7 +30,7 @@
 
 set(LIBS common;blocks;cryptonote_basic;cryptonote_core;multisig;net;
          cryptonote_protocol;daemonizer;mnemonics;epee;lmdb;device;
-         blockchain_db;ringct;wallet;cncrypto;easylogging;version;checkpoints)
+         blockchain_db;ringct;wallet;cncrypto;easylogging;version;checkpoints;randomx)
 
 set(Arqma_INCLUDE_DIRS "${CPP_ARQMA_DIR}")
 
@@ -44,7 +44,7 @@ foreach (l ${LIBS})
 	find_library(Arqma_${L}_LIBRARY
 		NAMES ${l}
 		PATHS ${CMAKE_LIBRARY_PATH}
-		PATH_SUFFIXES "/src/${l}" "/src/" "/external/db_drivers/lib${l}" "/lib" "/src/crypto" "/contrib/epee/src" "/external/easylogging++/"
+		PATH_SUFFIXES "/src/${l}" "/src/" "/external/db_drivers/lib${l}" "/lib" "/src/crypto" "/contrib/epee/src" "/external/easylogging++/" "/external/randomarq"
 		NO_DEFAULT_PATH
 	)
 
