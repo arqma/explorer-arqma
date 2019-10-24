@@ -6,7 +6,7 @@ set(PROJECT_NAME
 
 project(${PROJECT_NAME})
 
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++14")
+set(CMAKE_CXX_STANDARD 11)
 
 if (WIN32)
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wa,-mbig-obj -O3")
@@ -14,7 +14,7 @@ endif()
 
 
 if (NOT ARQMA_DIR)
-    set(ARQMA_DIR ~/arqma)
+    set(ARQMA_DIR ~/stagenet/arqma)
 endif()
 
 message(STATUS ARQMA_DIR ": ${ARQMA_DIR}")
@@ -23,7 +23,7 @@ set(ARQMA_SOURCE_DIR ${ARQMA_DIR}
         CACHE PATH "Path to the root directory for Arqma")
 
 # set location of arqma build tree
-set(ARQMA_BUILD_DIR ${ARQMA_SOURCE_DIR}/build/release
+set(ARQMA_BUILD_DIR ${ARQMA_SOURCE_DIR}/build/release/
         CACHE PATH "Path to the build directory for Arqma")
 
 set(MY_CMAKE_DIR "${CMAKE_CURRENT_LIST_DIR}/cmake"
@@ -69,7 +69,7 @@ endif()
 include_directories(${Boost_INCLUDE_DIRS})
 
 # include arqma
-include_directories(${ARQMA_SOURCE_DIR}/build/release)
+include_directories(${ARQMA_SOURCE_DIR}/build)
 
 include_directories("ext/mstch/include")
 include_directories("ext/mstch/include/src")
@@ -113,6 +113,7 @@ set(LIBRARIES
         multisig
         daemonizer
         cncrypto
+        randomx
         lmdb
         ringct
         ringct_basic
@@ -123,7 +124,6 @@ set(LIBRARIES
         checkpoints
         version
         epee
-        randomx
         sodium
         ${Boost_LIBRARIES}
         pthread
