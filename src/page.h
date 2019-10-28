@@ -43,7 +43,7 @@ extern "C" void rx_seedhash(const uint64_t height, const char *hash, const int m
 extern "C" void rx_slow_hash(const void *data, size_t length, char *hash, int miners);
 extern "C" void rx_reorg(const uint64_t split_height);
 
-static __thread randomx_vm *rx_vm = NULL;
+extern __thread randomx_vm *rx_vm;
 
 #include <algorithm>
 #include <limits>

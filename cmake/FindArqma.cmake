@@ -72,7 +72,7 @@ include_directories(
 		${ARQMA_SOURCE_DIR}/src
 		${ARQMA_SOURCE_DIR}/external
 		${ARQMA_SOURCE_DIR}/external/randomarq/src
-		${ARQMA_SOURCE_DIR}/build/
+		${ARQMA_SOURCE_DIR}/build/release
 		${ARQMA_SOURCE_DIR}/external/easylogging++
 		${ARQMA_SOURCE_DIR}/contrib/epee/include
 		${ARQMA_SOURCE_DIR}/external/db_drivers/liblmdb)
