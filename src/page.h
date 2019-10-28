@@ -7308,8 +7308,9 @@ get_randomx_code(uint64_t blk_height, block const& blk, crypto::hash const& blk_
 
   if (!rx_vm)
   {
+    crypto::hash block_hash;
     // this will create rx_vm instance if one does not exist
-    me_get_block_longhash(core_storage, blk, blk_height, 0);
+    me_get_block_longhash(core_storage, blk, block_hash, blk_height, 0);
 
     if(!rx_vm)
     {
