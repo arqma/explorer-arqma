@@ -125,6 +125,7 @@ set(LIBRARIES
         epee
         randomx
         sodium
+        zmq
         ${Boost_LIBRARIES}
         pthread
         unbound
