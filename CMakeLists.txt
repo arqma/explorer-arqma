@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.5.0)
+cmake_minimum_required(VERSION 3.12.0)
 
 set(PROJECT_NAME
         arqblocks)
@@ -6,7 +6,9 @@ set(PROJECT_NAME
 
 project(${PROJECT_NAME})
 
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++14")
+set(CMAKE_CXX_STANDARD 14)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+set(CMAKE_CXX_EXTENSIONS OFF)
 
 if (WIN32)
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wa,-mbig-obj -O3")
@@ -23,7 +25,7 @@ set(ARQMA_SOURCE_DIR ${ARQMA_DIR}
         CACHE PATH "Path to the root directory for Arqma")
 
 # set location of arqma build tree
-set(ARQMA_BUILD_DIR ${ARQMA_SOURCE_DIR}/build/release
+set(ARQMA_BUILD_DIR ${ARQMA_SOURCE_DIR}/build/Linux/release-v0.6.1/release
         CACHE PATH "Path to the build directory for Arqma")
 
 set(MY_CMAKE_DIR "${CMAKE_CURRENT_LIST_DIR}/cmake"
@@ -69,7 +71,7 @@ endif()
 include_directories(${Boost_INCLUDE_DIRS})
 
 # include arqma
-include_directories(${ARQMA_SOURCE_DIR}/build/release)
+include_directories(${ARQMA_SOURCE_DIR}/build/Linux/release-v0.6.1/release)
 
 include_directories("ext/mstch/include")
 include_directories("ext/mstch/include/src")
@@ -104,6 +106,7 @@ set(LIBRARIES
         myext
         mstch
         wallet
+        arqma_mq
         blockchain_db
         cryptonote_core
         cryptonote_protocol
@@ -125,7 +128,7 @@ set(LIBRARIES
         epee
         randomx
         sodium
-        zmq
+        libzmq
         ${Boost_LIBRARIES}
         pthread
         unbound
