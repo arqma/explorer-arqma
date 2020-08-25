@@ -1536,6 +1536,8 @@ show_block(string _blk_hash)
 
     return show_block(blk_height);
 }
+
+string
 show_randomx(uint64_t _blk_height)
 {
     // get block at the given height i
