@@ -28,9 +28,9 @@
 # (c) 2014-2016 cpp-ethereum contributors.
 #------------------------------------------------------------------------------
 
-set(LIBS common;blocks;cryptonote_basic;cryptonote_core;multisig;net;
-         cryptonote_protocol;daemonizer;mnemonics;epee;lmdb;device;
-         blockchain_db;ringct;wallet;cncrypto;easylogging;version;checkpoints;randomx)
+set(LIBS common;blocks;cryptonote_basic;cryptonote_core;multisig;net;arqma_mq;
+         cryptonote_protocol;daemonizer;mnemonics;epee;lmdb;device;randomx;
+         blockchain_db;ringct;wallet;cncrypto;easylogging;version;checkpoints)
 
 set(Arqma_INCLUDE_DIRS "${CPP_ARQMA_DIR}")
 
@@ -44,7 +44,7 @@ foreach (l ${LIBS})
 	find_library(Arqma_${L}_LIBRARY
 		NAMES ${l}
 		PATHS ${CMAKE_LIBRARY_PATH}
-		PATH_SUFFIXES "/src/${l}" "/src/" "/external/db_drivers/lib${l}" "/lib" "/src/crypto" "/contrib/epee/src" "/external/easylogging++/" "/external/randomarq"
+		PATH_SUFFIXES "/src/${l}" "/src/" "/external/lib${l}" "/lib" "/external/randomarq/" "/src/crypto" "/contrib/epee/src" "/external/easylogging++/" "/external/${l}"
 		NO_DEFAULT_PATH
 	)
 
@@ -60,18 +60,25 @@ endforeach()
 if (EXISTS ${ARQMA_BUILD_DIR}/src/ringct/libringct_basic.a)
 	message(STATUS FindArqma " found libringct_basic.a")
 	add_library(ringct_basic STATIC IMPORTED)
-	set_property(TARGET ringct_basic
-			PROPERTY IMPORTED_LOCATION ${ARQMA_BUILD_DIR}/src/ringct/libringct_basic.a)
+	set_property(TARGET ringct_basic PROPERTY IMPORTED_LOCATION ${ARQMA_BUILD_DIR}/src/ringct/libringct_basic.a)
 endif()
 
+if(EXISTS ${ARQMA_BUILD_DIR}/libzmq/lib/libzmq.a)
+	message(STATUS FindArqma " found in-tree libzmq.a")
+	add_library(libzmq STATIC IMPORTED)
+	set_property(TARGET libzmq PROPERTY IMPORTED_LOCATION ${ARQMA_BUILD_DIR}/libzmq/lib/libzmq.a)
+endif()
 
-message(STATUS ${ARQMA_SOURCE_DIR}/build)
+message(STATUS ${ARQMA_SOURCE_DIR}/build/Linux/release-v0.6.1)
 
 # include arqma headers
 include_directories(
-		${ARQMA_SOURCE_DIR}/src
-		${ARQMA_SOURCE_DIR}/external
-		${ARQMA_SOURCE_DIR}/build/Linux/release-v0.5/release
-		${ARQMA_SOURCE_DIR}/external/easylogging++
-		${ARQMA_SOURCE_DIR}/contrib/epee/include
-		${ARQMA_SOURCE_DIR}/external/db_drivers/liblmdb)
+    ${ARQMA_SOURCE_DIR}/src
+    ${ARQMA_SOURCE_DIR}/src/crypto
+    ${ARQMA_SOURCE_DIR}/external
+    ${ARQMA_SOURCE_DIR}/external/randomarq/src
+    ${ARQMA_SOURCE_DIR}/build/Linux/release-v0.6.1/release
+    ${ARQMA_SOURCE_DIR}/build/Linux/release-v0.6.1/release/libzmq/include
+    ${ARQMA_SOURCE_DIR}/external/easylogging++
+    ${ARQMA_SOURCE_DIR}/contrib/epee/include
+    ${ARQMA_SOURCE_DIR}/external/liblmdb)
