@@ -23,15 +23,6 @@
         <span id="add_tx_pub_keys" style="display: none;">{{add_tx_pub_keys}}</span>
       </div>
 
-      {{#uniform_payment_id}}
-      <div class="pure-u-1-4 pure-u-md-1-5">
-        <span>Uniform payment id</span>
-      </div>
-      <div class="pure-u-3-4 pure-u-md-4-5 line-break">
-        <span id="payment_id">{{uniform_payment_id}}</span>
-      </div>
-      {{/uniform_payment_id}}
-      
       {{#has_payment_id}}
       <div class="pure-u-1-4 pure-u-md-1-5">
         <span>Payment id</span>
@@ -113,7 +104,7 @@
         <span>Address</span>
       </div>
       <div class="pure-u-3-4 pure-u-md-4-5 line-break">
-        <span>{{xmr_address}}</span>
+        <span>{{arq_address}}</span>
       </div>
       <div class="pure-u-1-4 pure-u-md-1-5">
         <span>Viewkey</span>
@@ -138,7 +129,7 @@
         <span>Address</span>
       </div>
       <div class="pure-u-3-4 pure-u-md-4-5 line-break">
-        <span>{{xmr_address}}</span>
+        <span>{{arq_address}}</span>
       </div>
 
       <div class="pure-u-1-4 pure-u-md-1-5">
@@ -165,7 +156,7 @@
       <div class="table-subheader">
         Sum ARQ from matched outputs (i.e., incoming ARQ):
         {{#found_our_outputs}}
-        {{sum_xmr}}
+        {{sum_arq}}
         {{/found_our_outputs}}
         {{^found_our_outputs}}
         0.000000000
@@ -271,7 +262,7 @@
       <table class="pure-table pure-table-striped">
         <tr>
           <td>Sum from matched and marked by * ring member's outputs</td>
-          <td>{{sum_mixin_xmr}} ARQ</td>
+          <td>{{sum_mixin_arq}} ARQ</td>
         </tr>
         <tr>
           <td>Possible spending is</td>

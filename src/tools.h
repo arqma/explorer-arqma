@@ -363,7 +363,6 @@ calc_median(It it_begin, It it_end)
     return data[data.size() / 2];
 }
 
-
 void
 pause_execution(uint64_t no_seconds, const string &text = "now");
 

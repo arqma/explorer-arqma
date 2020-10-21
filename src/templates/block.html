@@ -11,7 +11,12 @@
   </div>
   
   <div class="table-header">
+  {{#is_random_arq}}
+    Block #{{blk_height}} <a href="/random_arq/{{blk_height}}" class="pure-button pure-button-active" style="font-size:60%" title="{{blk_height}}"> RandomARQ Source Code</a>
+  {{/is_random_arq}}
+  {{^is_random_arq}}
     Block #{{blk_height}}
+  {{/is_random_arq}}
   </div>
   
   <div class="table-scroller">

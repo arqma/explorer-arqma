@@ -9,8 +9,6 @@ namespace xmreg
 
 using namespace std;
 
-
-
 void
 CurrentBlockchainStatus::set_blockchain_variables(MicroCore* _mcore,
                                                   Blockchain* _core_storage)
@@ -136,12 +134,11 @@ CurrentBlockchainStatus::calculate_emission_in_blocks(
         mcore->get_block_by_height(start_blk, blk);
 
         uint64_t coinbase_amount = get_outs_money_amount(blk.miner_tx);
-        
+
         if(start_blk == 0)
         {
           coinbase_amount -= config::blockchain_settings::PREMINE_BURN;
         }
-
 
         vector<transaction> txs;
         vector<crypto::hash> missed_txs;
@@ -309,7 +306,7 @@ cryptonote::network_type CurrentBlockchainStatus::nettype {cryptonote::network_t
 
 string CurrentBlockchainStatus::output_file {"emission_amount.txt"};
 
-string CurrentBlockchainStatus::deamon_url {"http://127.0.0.1:19994"};
+string CurrentBlockchainStatus::daemon_url {"http://127.0.0.1:19994"};
 
 uint64_t CurrentBlockchainStatus::blockchain_chunk_size {10000};
 

@@ -1,0 +1,24 @@
+[Unit]
+Description=Arqma BlockChain Explorer
+After=network-online.target
+
+[Service]
+User=arqma
+Group=arqma
+Type=simple
+WorkingDirectory=/home/arqma/explorer-arqma/build
+Restart=always
+ExecStart=/home/arqma/explorer-arqma/build/arqblocks
+
+# By default explorer is running at: http://127.0.0.1:19990
+# options that are switch ON when starting:
+# --enable-json-api --enable-pusher --enable-random-arq --enable-key-image-checker \
+# --enable-output-key-checker --enable-autorefresh-option --enable-emission-monitor
+
+# All Javascript has been deleted and no info is stored on client side.
+# Frontend is generate on-the-fly and got auto-adjustment switched ON dependant to device you are using.
+
+
+[Install]
+WantedBy=multi-user.target
+

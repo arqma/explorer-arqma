@@ -24,7 +24,6 @@ namespace bf = boost::filesystem;
 
 struct CurrentBlockchainStatus
 {
-
     struct Emission
     {
         uint64_t coinbase;
@@ -51,7 +50,7 @@ struct CurrentBlockchainStatus
 
     static string output_file;
 
-    static string deamon_url;
+    static string daemon_url;
 
     // how many blocks to read before thread goes to sleep
     static uint64_t blockchain_chunk_size;

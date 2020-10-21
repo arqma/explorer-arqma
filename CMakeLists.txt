@@ -1,23 +1,31 @@
-cmake_minimum_required(VERSION 3.12.0)
+cmake_minimum_required(VERSION 3.10)
+message(STATUS "CMake version: ${CMAKE_VERSION}")
+
+list(INSERT CMAKE_MODULE_PATH 0 "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
+include(CheckCCompilerFlag)
+include(CheckCXXCompilerFlag)
+include(CheckLinkerFlag)
+include(CheckLibraryExists)
+include(CheckFunctionExists)
 
 set(PROJECT_NAME
         arqblocks)
 
-
-project(${PROJECT_NAME})
+project(${PROJECT_NAME}
+	LANGUAGES CXX C)
 
 set(CMAKE_CXX_STANDARD 14)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
 
-if (WIN32)
+if(WIN32)
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wa,-mbig-obj -O3")
 endif()
 
-
-if (NOT ARQMA_DIR)
-    set(ARQMA_DIR ~/arqma)
-endif()
+# changed to comply with stagenet requirements
+# will need to be changed on release later on
+# along with other paths which had been changed as well
+set(ARQMA_DIR ~/devnet/arqma)
 
 message(STATUS ARQMA_DIR ": ${ARQMA_DIR}")
 
@@ -25,7 +33,7 @@ set(ARQMA_SOURCE_DIR ${ARQMA_DIR}
         CACHE PATH "Path to the root directory for Arqma")
 
 # set location of arqma build tree
-set(ARQMA_BUILD_DIR ${ARQMA_SOURCE_DIR}/build/Linux/release-v0.6.1/release
+set(ARQMA_BUILD_DIR ${ARQMA_SOURCE_DIR}/build/Linux/dev/release
         CACHE PATH "Path to the build directory for Arqma")
 
 set(MY_CMAKE_DIR "${CMAKE_CURRENT_LIST_DIR}/cmake"
@@ -40,41 +48,34 @@ include(MyUtils)
 
 find_package(Arqma)
 
+cmake_policy(SET CMP0093 NEW)
+
 # find boost
-find_package(Boost COMPONENTS
-        system
-        filesystem
-        thread
-        date_time
-        chrono
-        regex
-        serialization
-        program_options
-        date_time
-        REQUIRED)
+find_package(Boost 1.62.0 QUIET REQUIRED COMPONENTS system filesystem thread date_time chrono regex serialization program_options)
 
 #info https://github.com/arsenm/sanitizers-cmake
 find_package(Sanitizers)
 
 if(APPLE)
-    include_directories(/usr/local/opt/openssl/include)
-    link_directories(/usr/local/opt/openssl/lib)
+  include_directories(/usr/local/opt/openssl@1.1/include)
+  link_directories(/usr/local/opt/openssl@1.1/lib)
+  link_directories(/usr/local/lib)
 endif()
 
 
-if (${CMAKE_SYSTEM_NAME} MATCHES "Darwin" OR WIN32)
-    add_library(unbound STATIC IMPORTED)
-    set_property(TARGET unbound PROPERTY IMPORTED_LOCATION ${ARQMA_BUILD_DIR}/external/unbound/libunbound.a)
+if(${CMAKE_SYSTEM_NAME} MATCHES "Darwin" OR WIN32)
+  add_library(libunbound STATIC IMPORTED)
+  set_property(TARGET libunbound PROPERTY IMPORTED_LOCATION ${ARQMA_BUILD_DIR}/external/unbound/libunbound.a)
 endif()
 
 # include boost headers
-include_directories(${Boost_INCLUDE_DIRS})
+include_directories(SYSTEM ${Boost_INCLUDE_DIRS})
 
 # include arqma
-include_directories(${ARQMA_SOURCE_DIR}/build/Linux/release-v0.6.1/release)
+include_directories(${ARQMA_SOURCE_DIR}/build/Linux/dev)
 
 include_directories("ext/mstch/include")
-include_directories("ext/mstch/include/src")
+include_directories("ext/mstch/include/mstch")
 include_directories("ext/crow")
 
 # add ext/ subfolder
@@ -99,7 +100,6 @@ create_git_version()
 configure_files(${CMAKE_CURRENT_SOURCE_DIR}/src/templates ${CMAKE_CURRENT_BINARY_DIR}/templates)
 configure_files(${CMAKE_CURRENT_SOURCE_DIR}/src/templates/css ${CMAKE_CURRENT_BINARY_DIR}/templates/css)
 configure_files(${CMAKE_CURRENT_SOURCE_DIR}/src/templates/partials ${CMAKE_CURRENT_BINARY_DIR}/templates/partials)
-configure_files(${CMAKE_CURRENT_SOURCE_DIR}/src/templates/js ${CMAKE_CURRENT_BINARY_DIR}/templates/js)
 
 set(LIBRARIES
         myxrm
@@ -130,31 +130,26 @@ set(LIBRARIES
         sodium
         libzmq
         ${Boost_LIBRARIES}
+        libunbound
         pthread
-        unbound
         curl
         crypto
         ssl)
 
 if(APPLE)
-    set(LIBRARIES ${LIBRARIES} "-framework IOKit -framework Foundation")
+  set(LIBRARIES ${LIBRARIES} "-framework IOKit -framework Foundation")
 else()
-    set(LIBRARIES ${LIBRARIES} atomic)
+  set(LIBRARIES ${LIBRARIES} atomic)
 endif()
 
-if (NOT ${CMAKE_SYSTEM_NAME} MATCHES "Darwin" AND NOT WIN32)
-    set(LIBRARIES ${LIBRARIES} unwind)
+if(NOT ${CMAKE_SYSTEM_NAME} MATCHES "Darwin" AND NOT WIN32)
+  set(LIBRARIES ${LIBRARIES} unwind)
 endif()
 
-if (WIN32)
-    set(LIBRARIES ${LIBRARIES}
-            wsock32
-            ntdll
-            ws2_32
-            Iphlpapi
-            )
+if(WIN32)
+  set(LIBRARIES ${LIBRARIES} wsock32 ntdll ws2_32 Iphlpapi)
 else()
-    set(LIBRARIES ${LIBRARIES} dl)
+  set(LIBRARIES ${LIBRARIES} dl)
 endif()
 
 find_package(HIDAPI)

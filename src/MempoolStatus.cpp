@@ -97,7 +97,7 @@ MempoolStatus::start_mempool_status_thread()
 bool
 MempoolStatus::read_mempool()
 {
-    rpccalls rpc {deamon_url};
+    rpccalls rpc {daemon_url};
 
     string error_msg;
 
@@ -238,7 +238,7 @@ MempoolStatus::read_mempool()
 bool
 MempoolStatus::read_network_info()
 {
-    rpccalls rpc {deamon_url};
+    rpccalls rpc {daemon_url};
 
     COMMAND_RPC_GET_INFO::response rpc_network_info;
 
@@ -336,7 +336,7 @@ MempoolStatus::is_thread_running()
 }
 
 bf::path MempoolStatus::blockchain_path {"/home/arqma/.arqma/lmdb"};
-string MempoolStatus::deamon_url {"http://127.0.0.1:19994"};
+string MempoolStatus::daemon_url {"http://127.0.0.1:19994"};
 cryptonote::network_type MempoolStatus::nettype {cryptonote::network_type::MAINNET};
 atomic<bool>       MempoolStatus::is_running {false};
 boost::thread      MempoolStatus::m_thread;
