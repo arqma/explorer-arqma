@@ -80,8 +80,6 @@ namespace xmreg
         virtual ~MicroCore();
     };
 
-
-
     bool
     init_blockchain(const string &path,
                     MicroCore &mcore,

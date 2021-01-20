@@ -4,7 +4,6 @@
 
 #include "CmdLineOptions.h"
 
-
 namespace xmreg
 {
     /**
@@ -27,41 +26,35 @@ namespace xmreg
                  "use testnet blockchain")
                 ("stagenet,s", value<bool>()->default_value(false)->implicit_value(true),
                  "use stagenet blockchain")
-                ("enable-pusher", value<bool>()->default_value(false)->implicit_value(true),
+                ("enable-pusher", value<bool>()->default_value(true)->implicit_value(true),
                  "enable signed transaction pusher")
+                ("enable-random-arq", value<bool>()->default_value(true)->implicit_value(true),
+                 "enable generation of random_arq source code for blocks")
                 ("enable-mixin-details", value<bool>()->default_value(false)->implicit_value(true),
                  "enable mixin details for key images, e.g., timescale, mixin of mixins, in tx context")
-                ("enable-key-image-checker", value<bool>()->default_value(false)->implicit_value(true),
+                ("enable-key-image-checker", value<bool>()->default_value(true)->implicit_value(true),
                  "enable key images file checker")
-                ("enable-output-key-checker", value<bool>()->default_value(false)->implicit_value(true),
+                ("enable-output-key-checker", value<bool>()->default_value(true)->implicit_value(true),
                  "enable outputs key file checker")
-                ("enable-json-api", value<bool>()->default_value(false)->implicit_value(true),
+                ("enable-json-api", value<bool>()->default_value(true)->implicit_value(true),
                  "enable JSON REST api")
-                ("enable-tx-cache", value<bool>()->default_value(false)->implicit_value(true),
-                 "enable caching of transaction details")
-                ("show-cache-times", value<bool>()->default_value(false)->implicit_value(true),
-                 "show times of getting data from cache vs no cache")
-                ("enable-block-cache", value<bool>()->default_value(false)->implicit_value(true),
-                 "enable caching of block details")
-                ("enable-js", value<bool>()->default_value(false)->implicit_value(true),
-                 "enable checking outputs and proving txs using JavaScript on client side")
                 ("enable-as-hex", value<bool>()->default_value(false)->implicit_value(true),
                  "enable links to provide hex represtations of a tx and a block")
-                ("enable-autorefresh-option", value<bool>()->default_value(false)->implicit_value(true),
+                ("enable-autorefresh-option", value<bool>()->default_value(true),
                  "enable users to have the index page on autorefresh")
-                ("enable-emission-monitor", value<bool>()->default_value(false)->implicit_value(true),
+                ("enable-emission-monitor", value<bool>()->default_value(true),
                  "enable Arqma total emission monitoring thread")
-                ("port,p", value<string>()->default_value("8081"),
+                ("port,p", value<string>()->default_value("19990"),
                  "default explorer port")
                 ("bindaddr,x", value<string>()->default_value("127.0.0.1"),
                  "default bind address for the explorer")
                 ("testnet-url", value<string>()->default_value(""),
                  "you can specify testnet url, if you run it on mainnet or stagenet. link will show on front page to testnet explorer")
-                ("stagenet-url", value<string>()->default_value(""),
+                ("stagenet-url", value<string>()->default_value("https://stagenet.arqma.com"),
                  "you can specify stagenet url, if you run it on mainnet or testnet. link will show on front page to stagenet explorer")
-                ("mainnet-url", value<string>()->default_value(""),
+                ("mainnet-url", value<string>()->default_value("https://explorer.arqma.com"),
                  "you can specify mainnet url, if you run it on testnet or stagenet. link will show on front page to mainnet explorer")
-                ("no-blocks-on-index", value<string>()->default_value("10"),
+                ("no-blocks-on-index", value<string>()->default_value("49"),
                  "number of last blocks to be shown on index page")
                 ("mempool-info-timeout", value<string>()->default_value("5000"),
                  "maximum time, in milliseconds, to wait for mempool data for the front page")
@@ -75,8 +68,8 @@ namespace xmreg
                  "path to crt file for ssl (https) functionality")
                 ("ssl-key-file", value<string>(),
                  "path to key file for ssl (https) functionality")
-                ("deamon-url,d", value<string>()->default_value("http://127.0.0.1:19994"),
-                 "Arqma deamon url");
+                ("daemon-url,d", value<string>()->default_value("http://127.0.0.1:19994"),
+                 "Arqma Network daemon url");
 
 
         store(command_line_parser(acc, avv)
@@ -112,13 +105,9 @@ namespace xmreg
 
 
     // explicit instantiations of get_option template function
-    template  boost::optional<string>
-    CmdLineOptions::get_option<string>(const string &opt_name) const;
+    template boost::optional<string>CmdLineOptions::get_option<string>(const string &opt_name) const;
 
-    template  boost::optional<bool>
-            CmdLineOptions::get_option<bool>(const string &opt_name) const;
+    template boost::optional<bool>CmdLineOptions::get_option<bool>(const string &opt_name) const;
 
-    template  boost::optional<size_t>
-            CmdLineOptions::get_option<size_t>(const string &opt_name) const;
-
+    template boost::optional<size_t>CmdLineOptions::get_option<size_t>(const string &opt_name) const;
 }

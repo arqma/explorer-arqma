@@ -144,7 +144,7 @@ remove_trailing_path_separator(const bf::path &in_path)
 {
 #ifdef WIN32
     std::wstring_convert<std::codecvt_utf8<wchar_t>, wchar_t> converter;
-string path_str = converter.to_bytes(in_path.native());
+    string path_str = converter.to_bytes(in_path.native());
 #else
     string path_str = in_path.native();
 #endif

@@ -67,7 +67,7 @@ using namespace std;
 
 class rpccalls
 {
-    string deamon_url ;
+    string daemon_url ;
     uint64_t timeout_time;
 
     std::chrono::milliseconds timeout_time_ms;
@@ -81,10 +81,10 @@ class rpccalls
 
 public:
 
-    rpccalls(string _deamon_url = "http://127.0.0.1:19994", uint64_t _timeout = 200000);
+    rpccalls(string _daemon_url = "http://127.0.0.1:19994", uint64_t _timeout = 200000);
 
     bool
-    connect_to_arqma_deamon();
+    connect_to_arqma_daemon();
 
     uint64_t
     get_current_height();
@@ -129,9 +129,9 @@ public:
         {
             std::lock_guard<std::mutex> guard(m_daemon_rpc_mutex);
 
-            if (!connect_to_arqma_deamon())
+            if (!connect_to_arqma_daemon())
             {
-                cerr << "get_alt_blocks: not connected to deamon" << endl;
+                cerr << "get_alt_blocks: not connected to daemon" << endl;
                 return false;
             }
 
@@ -155,15 +155,15 @@ public:
 
             if (!err.empty())
             {
-                cerr << "Error connecting to Arqma deamon due to "
+                cerr << "Error connecting to Arqma daemon due to "
                      << err << endl;
                 return false;
             }
         }
         else
         {
-            cerr << "Error connecting to Arqma deamon at "
-                 << deamon_url << endl;
+            cerr << "Error connecting to Arqma daemon at "
+                 << daemon_url << endl;
             return false;
         }
 

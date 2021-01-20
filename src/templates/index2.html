@@ -124,14 +124,3 @@
   current page: {{page_no}} / <a href="/page/{{total_page_no}}">{{total_page_no}}</a>
   | <a href="/page/{{next_page}}">next page</a>
 </div>
-
-{{#show_cache_times}}
-<div>
-  <h6 style="margin-top: 1px;color:#949490">
-    Tx details construction time: {{construction_time_total}} s
-    <br/>
-    includes {{construction_time_cached}} s from block cache ({{cache_hits}} hits)
-    and {{construction_time_non_cached}} s from non cache ({{cache_misses}} misses)
-  </h6>
-</div>
-{{/show_cache_times}}

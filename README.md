@@ -1,17 +1,5 @@
 # ArQmA Onion Blockchain Explorer
 
-Currently available Arqma blockchain explorers have several limitations which are of
-special importance to privacy-oriented users:
-
- - they use JavaScript,
- - have images which might be used for [cookieless tracking](http://lucb1e.com/rp/cookielesscookies/),
- - track users activates through google analytics,
- - are closed sourced,
- - are not available as hidden services,
- - do not support Arqma testnet nor stagenet networks,
- - have limited JSON API.
-
-
 In this example, these limitations are addressed by development of
 an ArQmA Onion Blockchain Explorer. The example not only shows how to use
 ArQmA C++ libraries, but also demonstrates how to use:
@@ -21,13 +9,25 @@ ArQmA C++ libraries, but also demonstrates how to use:
  - [json](https://github.com/nlohmann/json) - JSON for Modern C++
  - [fmt](https://github.com/fmtlib/fmt) - Small, safe and fast string formatting library
 
+## Blockchain Explorers
+
+Arqma Network MainNet:
+
+ - [https://explorer.arqma.com](https://explorer.arqma.com) - based on Onion Monero Blockchain Explorer with new FrontEnd.
+ - [https://blocks.arqma.com](https://blocks.arqma.com) - original Arqma Network Blockchain Explorer based on Onion Monero Blockchain Explorer.
+
+Arqma Network TestNet:
+
+
+Arqma Network StageNet(DevNet):
+
+ - [https://stagenet.arqma.com](https://stagenet.arqma.com) - StageNet version of MainNet Explorer used for Arqma Codebase Development and not only. Have no influence to MainNet.
 
 ## ArQmA Onion Blockchain Explorer features
 
 The key features of the ArQmA Onion Blockchain Explorer are:
 
  - no cookies, no web analytics trackers, no images,
- - by default no JavaScript, but can be enabled for client side decoding and proving transactions,
  - open sourced,
  - made fully in C++,
  - showing encrypted payments ID,
@@ -43,7 +43,8 @@ The key features of the ArQmA Onion Blockchain Explorer are:
  - estimate possible spendings based on address and viewkey,
  - can provide total amount of all miner fees,
  - decoding encrypted payment id,
- - decoding outputs and proving txs sent to sub-address.
+ - decoding outputs and proving txs sent to sub-address,
+ - can list RandomARQ code for each block.
 
 
 
@@ -51,13 +52,13 @@ The key features of the ArQmA Onion Blockchain Explorer are:
 
 ##### Compile latest ArQmA development version
 
-Download and compile recent ArQmA into your home folder:
+Download and compile the most recent ArQmA into your home folder:
 
 ```bash
 # first install ArQmA dependecines
 sudo apt update
 
-sudo apt install git build-essential cmake pkg-config libboost-all-dev libssl-dev libzmq3-dev libunbound-dev libsodium-dev libunwind8-dev liblzma-dev libreadline6-dev libldns-dev libexpat1-dev doxygen graphviz libpgm-dev libudev-dev libusb-1.0-0-dev libhidapi-dev
+sudo apt install git build-essential cmake pkg-config libboost-all-dev libssl-dev libsodium-dev libunwind-dev liblzma-dev libreadline8-dev libldns-dev libexpat1-dev doxygen graphviz libudev-dev libusb-1.0-0-dev libhidapi-dev
 
 # go to home folder
 cd ~
@@ -65,7 +66,6 @@ cd ~
 git clone --recursive https://github.com/arqma/arqma
 
 cd arqma/
-
 
 USE_SINGLE_BUILDDIR=1 make
 ```
@@ -77,25 +77,13 @@ as follows:
 
 ```bash
 # go to home folder if still in ~/arqma
-cd ~
+cd
 
 # download the source code
 git clone https://github.com/arqma/explorer-arqma.git
 
 # enter the downloaded sourced code folder
 cd explorer-arqma
-
-# make a build folder and enter it
-mkdir build && cd build
-
-# create the makefile
-cmake ..
-
-# altearnatively can use: cmake -DARQMA_DIR=/path/to/arqma_folder ..
-# if arqma is not in ~/arqma
-#
-# also can build with ASAN (sanitizers), for example
-# cmake -DSANITIZE_ADDRESS=On ..
 
 # compile
 make
@@ -130,68 +118,39 @@ Go to your browser: http://127.0.0.1:8081
 
 ```
 arqblocks, Arqma Onion Blockchain Explorer:
-  -h [ --help ] [=arg(=1)] (=0)         produce help message
-  -t [ --testnet ] [=arg(=1)] (=0)      use testnet blockchain
-  -s [ --stagenet ] [=arg(=1)] (=0)     use stagenet blockchain
-  --enable-pusher [=arg(=1)] (=0)       enable signed transaction pusher
-  --enable-mixin-details [=arg(=1)] (=0)
-                                        enable mixin details for key images,
-                                        e.g., timescale, mixin of mixins, in tx
-                                        context
-  --enable-key-image-checker [=arg(=1)] (=0)
-                                        enable key images file checker
-  --enable-output-key-checker [=arg(=1)] (=0)
-                                        enable outputs key file checker
-  --enable-json-api [=arg(=1)] (=1)     enable JSON REST api
-  --enable-tx-cache [=arg(=1)] (=0)     enable caching of transaction details
-  --show-cache-times [=arg(=1)] (=0)    show times of getting data from cache
-                                        vs no cache
-  --enable-block-cache [=arg(=1)] (=0)  enable caching of block details
-  --enable-js [=arg(=1)] (=0)           enable checking outputs and proving txs
-                                        using JavaScript on client side
-  --enable-autorefresh-option [=arg(=1)] (=0)
-                                        enable users to have the index page on
-                                        autorefresh
-  --enable-emission-monitor [=arg(=1)] (=0)
-                                        enable Monero total emission monitoring
-                                        thread
-  -p [ --port ] arg (=8081)             default explorer port
-  --testnet-url arg                     you can specify testnet url, if you run
-                                        it on mainnet or stagenet. link will
-                                        show on front page to testnet explorer
-  --stagenet-url arg                    you can specify stagenet url, if you
-                                        run it on mainnet or testnet. link will
-                                        show on front page to stagenet explorer
-  --mainnet-url arg                     you can specify mainnet url, if you run
-                                        it on testnet or stagenet. link will
-                                        show on front page to mainnet explorer
-  --no-blocks-on-index arg (=10)        number of last blocks to be shown on
-                                        index page
-  --mempool-info-timeout arg (=5000)    maximum time, in milliseconds, to wait
-                                        for mempool data for the front page
-  --mempool-refresh-time arg (=5)       time, in seconds, for each refresh of
-                                        mempool state
-  -b [ --bc-path ] arg                  path to lmdb folder of the blockchain,
-                                        e.g., ~/.arqma/lmdb
-  --ssl-crt-file arg                    path to crt file for ssl (https)
-                                        functionality
-  --ssl-key-file arg                    path to key file for ssl (https)
-                                        functionality
-  -d [ --deamon-url ] arg (=http:://127.0.0.1:18081)
-                                        Arqma deamon url
+  -h [ --help ] [=arg(=1)] (=0)				produce help message
+  -t [ --testnet ] [=arg(=1)] (=0)			use testnet blockchain
+  -s [ --stagenet ] [=arg(=1)] (=0)			use stagenet blockchain
+  --enable-pusher [=arg(=1)] (=1)			enable signed transaction pusher
+  --enable-random-arq [=arg(=1)] (=1)			enable generation of random_arq code
+  --enable-mixin-details [=arg(=1)] (=0)		enable mixin details for key images, e.g., timescale, mixin of mixins, in tx context
+  --enable-key-image-checker [=arg(=1)] (=1)		enable key images file checker
+  --enable-output-key-checker [=arg(=1)] (=1)		enable outputs key file checker
+  --enable-json-api [=arg(=1)] (=1)			enable JSON REST api
+  --enable-as-hex [=arg(=1)] (=0)			enable links to provide hex representation of an tx and block
+  --enable-autorefresh-option [=arg(=1)] (=1)		enable users to have the index page on autorefresh
+  --enable-emission-monitor [=arg(=1)] (=1)		enable Arqma Network total emission monitoring thread
+  -p [ --port ] arg (=19990)				default explorer port
+  -x [ --bindaddr ] arg (=0.0.0.0)			default bind address for the explorer (default=127.0.0.1)
+  --testnet-url arg					you can specify testnet url, if you run it on mainnet or stagenet. link will show on front page to testnet explorer
+  --stagenet-url arg					you can specify stagenet url, if you run it on mainnet or testnet. link will show on front page to stagenet explorer
+  --mainnet-url arg					you can specify mainnet url, if you run it on testnet or stagenet. link will show on front page to mainnet explorer
+  --no-blocks-on-index arg (=49)			number of last blocks to be shown on index page
+  --mempool-info-timeout arg (=5000)			maximum time, in milliseconds, to wait for mempool data for the front page
+  --mempool-refresh-time arg (=5)			time, in seconds, for each refresh of mempool state
+  -c [ --concurrency ] arg (=0)				number of threads handling queries. 0 (default) is auto and depends on host CPU
+  -b [ --bc-path ] arg					path to lmdb folder of the blockchain, e.g., ~/.arqma/lmdb
+  --ssl-crt-file arg					path to crt file for ssl (https) functionality
+  --ssl-key-file arg					path to key file for ssl (https) functionality
+  -d [ --daemon-url ] arg (=http:://127.0.0.1:19994)	Arqma Network daemon url
 ```
 
 Example usage, defined as bash aliases.
 
 ```bash
 # for mainnet explorer
-alias arqblocksmainnet='~/blockchain-explorer/build/arqblocks    --port 8081 --testnet-url "http://139.162.32.245:8082" --enable-pusher --enable-emission-monitor'
-
-# for testnet explorer
-alias arqblockstestnet='~/blockchain-explorer/build/arqblocks -t --port 8082 --mainnet-url "http://139.162.32.245:8081" --enable-pusher --enable-emission-monitor'
+alias arqblocksmainnet='~/blockchain-explorer/build/arqblocks --testnet-url "http://139.162.32.245:8082"'
 ```
-
-These are aliases similar to those used for http://139.162.32.245:8081/ and http://139.162.32.245:8082/, respectively.
 
 ## Enable Arqma emission
 
@@ -231,15 +190,6 @@ The values given, can be checked using Arqma daemon's  `print_coinbase_tx_sum` c
 For example, for the above example: `print_coinbase_tx_sum 0 1313449`.
 
 To disable the monitor, simply restart the explorer without `--enable-emission-monitor` flag.
-
-## Enable JavaScript for decoding proving transactions
-
-By default, decoding and proving tx's outputs are done on the server side. To do this on the client side
-(private view and tx keys are not send to the server) JavaScript-based decoding can be enabled:
-
-```
-arqblocks --enable-js
-```
 
 ## Enable SSL (https)
 
@@ -724,9 +674,9 @@ curl  -w "\n" -X GET "http://127.0.0.1:8081/api/version"
     "api": 65536,
     "blockchain_height": 1357031,
     "git_branch_name": "update_to_current_arqma",
-    "last_git_commit_date": "2017-07-25",
+    "last_git_commit_date": "2020-07-25",
     "last_git_commit_hash": "a549f25",
-    "arqma_version_full": "0.10.3.1-ab594cfe"
+    "arqma_version_full": "0.6.1.0-ab594cfe"
   },
   "status": "success"
 }
