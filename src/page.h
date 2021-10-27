@@ -297,10 +297,10 @@ struct tx_details
             double payed_for_kB = arq_amount / tx_size;
 
             mixin_str             = std::to_string(mixin_no);
-            fee_str               = fmt::format("{:0.6f}", arq_amount);
-            fee_short_str         = fmt::format("{:0.4f}", arq_amount);
+            fee_str               = fmt::format("{:0.9f}", arq_amount);
+            fee_short_str         = fmt::format("{:0.9f}", arq_amount);
             fee_nano_str          = fmt::format("{:04.0f}", arq_amount * 1e9);
-            payed_for_kB_str      = fmt::format("{:0.6f}", payed_for_kB);
+            payed_for_kB_str      = fmt::format("{:0.9f}", payed_for_kB);
             payed_for_kB_nano_str = fmt::format("{:04.0f}", payed_for_kB * 1e9);
         }
 
@@ -314,10 +314,10 @@ struct tx_details
                 {"fee_nano"          , fee_nano_str},
                 {"payed_for_kB"      , payed_for_kB_str},
                 {"payed_for_kB_nano" , payed_for_kB_nano_str},
-                {"sum_inputs"        , arq_amount_to_str(arq_inputs , "{:0.6f}")},
-                {"sum_outputs"       , arq_amount_to_str(arq_outputs, "{:0.6f}")},
-                {"sum_inputs_short"  , arq_amount_to_str(arq_inputs , "{:0.4f}")},
-                {"sum_outputs_short" , arq_amount_to_str(arq_outputs, "{:0.4f}")},
+                {"sum_inputs"        , arq_amount_to_str(arq_inputs , "{:0.9f}")},
+                {"sum_outputs"       , arq_amount_to_str(arq_outputs, "{:0.9f}")},
+                {"sum_inputs_short"  , arq_amount_to_str(arq_inputs , "{:0.9f}")},
+                {"sum_outputs_short" , arq_amount_to_str(arq_outputs, "{:0.9f}")},
                 {"no_inputs"         , static_cast<uint64_t>(input_key_imgs.size())},
                 {"no_outputs"        , static_cast<uint64_t>(output_pub_keys.size())},
                 {"no_nonrct_inputs"  , num_nonrct_inputs},
@@ -630,14 +630,6 @@ index2(uint64_t page_no = 0, bool refresh_page = false)
           continue;
         }
 
-        uint64_t blk_diff;
-
-        if(!mcore->get_diff_at_height(i, blk_diff))
-        {
-          cerr << "Cant get block diff: " << i << endl;
-          return fmt::format("Cant get block diff {:d}!", i); vector<pair<crypto::hash, mstch::node>> txd_pairs;
-        }
-
         uint64_t tx_i {0};
 
         //          tx_hash     , txd_map
@@ -655,7 +647,6 @@ index2(uint64_t page_no = 0, bool refresh_page = false)
             txd_map.insert({"height"    , i});
             txd_map.insert({"blk_hash"  , blk_hash_str});
             txd_map.insert({"age"       , age.first});
-            txd_map.insert({"diff"      , blk_diff});
             txd_map.insert({"is_ringct" , (tx.version > 1)});
             txd_map.insert({"rct_type"  , tx.rct_signatures.type});
             txd_map.insert({"blk_size"  , blk_size_str});

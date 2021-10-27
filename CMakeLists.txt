@@ -25,7 +25,8 @@ endif()
 # changed to comply with stagenet requirements
 # will need to be changed on release later on
 # along with other paths which had been changed as well
-set(ARQMA_DIR ~/testbuild/arqmadev)
+set(ARQMA_DIR ~/dev/arqma)
+set(ARQMA_BRANCH dev)
 
 message(STATUS ARQMA_DIR ": ${ARQMA_DIR}")
 
@@ -33,7 +34,7 @@ set(ARQMA_SOURCE_DIR ${ARQMA_DIR}
         CACHE PATH "Path to the root directory for Arqma")
 
 # set location of arqma build tree
-set(ARQMA_BUILD_DIR ${ARQMA_SOURCE_DIR}/build/Linux/dev/release
+set(ARQMA_BUILD_DIR ${ARQMA_SOURCE_DIR}/build/Linux/${ARQMA_BRANCH}/release
         CACHE PATH "Path to the build directory for Arqma")
 
 set(MY_CMAKE_DIR "${CMAKE_CURRENT_LIST_DIR}/cmake"
@@ -72,7 +73,7 @@ endif()
 include_directories(SYSTEM ${Boost_INCLUDE_DIRS})
 
 # include arqma
-include_directories(${ARQMA_SOURCE_DIR}/build/Linux/dev)
+include_directories(${ARQMA_SOURCE_DIR}/build/Linux/${ARQMA_BRANCH})
 
 include_directories("ext/mstch/include")
 include_directories("ext/mstch/include/mstch")
