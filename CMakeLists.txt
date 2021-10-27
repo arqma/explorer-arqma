@@ -31,7 +31,7 @@ message(STATUS ARQMA_DIR ": ${ARQMA_DIR}")
 
 set(ARQMA_SOURCE_DIR ${ARQMA_DIR}
         CACHE PATH "Path to the root directory for Arqma")
-
+	
 # set location of arqma build tree
 set(ARQMA_BUILD_DIR ${ARQMA_SOURCE_DIR}/build/Linux/dev/release
         CACHE PATH "Path to the build directory for Arqma")
