@@ -86,29 +86,29 @@
     <table class="pure-table pure-table-striped">
       <thead>
         <tr>
-          <th style="width:50px;">height</th>
-          <th style="width:70px;">age {{age_format}}<!--(Δm)--></th>
-          <th style="width:50px;">size [kB]<!--(Δm)--></th>
-          <th>transaction hash</th>
-          <th style="width:50px;">fee</th>
-          <th style="width:60px;">outputs</th>
-          <th style="width:80px;">in/out/pID</th>
-          <th style="width:40px;">ring size</th>
-          <th style="width:60px;">tx size [kB]</th>
+          <th style="width:50px;text-align:center;vertical-align:middle;">height</th>
+          <th style="width:100px;text-align:center;vertical-align:middle;">block difficulty</th>
+          <th style="width:65px;text-align:center;vertical-align:middle;">age {{age_format}}<!--(Δm)--></th>
+          <th style="width:50px;text-align:center;vertical-align:middle;">size [kB]<!--(Δm)--></th>
+          <th style="text-align:center;vertical-align:middle;">transaction hash</th>
+          <th style="width:50px;text-align:center;vertical-align:middle;">fee</th>
+          <th style="width:60px;text-align:center;vertical-align:middle;">outputs</th>
+          <th style="width:50px;text-align:center;vertical-align:middle;">in/out/pID</th>
+          <th style="width:50px;text-align:center;vertical-align:middle;">tx size [kB]</th>
         </tr>
       </thead>
       <tbody>
         {{#txs}}
         <tr>
-          <td><a href="/block/{{height}}">{{height}}</a></td>
-          <td>{{age}}<!--{{time_delta}}--></td>
-          <td>{{blk_size}}</td>
-          <td><a href="/tx/{{hash}}">{{hash}}</a></td>
-          <td>{{tx_fee_short}}</td>
-          <td>{{sum_outputs_short}}</td>
-          <td>{{no_inputs}}/{{no_outputs}}/{{pID}}</td>
-          <td>{{mixin}} {{#is_bp}}bp{{/is_bp}}</td>
-          <td>{{tx_size_short}}</td>
+          <td style="text-align:center;vertical-align:middle;"><a href="/block/{{height}}">{{height}}</a></td>
+          <td style="text-align:center;vertical-align:middle;">{{diff}}</td>
+          <td style="text-align:center;vertical-align:middle;">{{age}}<!--{{time_delta}}--></td>
+          <td style="text-align:center;vertical-align:middle;">{{blk_size}}</td>
+          <td style="text-align:center;vertical-align:middle;"><a href="/tx/{{hash}}">{{hash}}</a></td>
+          <td style="text-align:center;vertical-align:middle;">{{tx_fee_short}}</td>
+          <td style="text-align:center;vertical-align:middle;">{{sum_outputs_short}}</td>
+          <td style="text-align:center;vertical-align:middle;">{{no_inputs}}/{{no_outputs}}/{{pID}}</td>
+          <td style="text-align:center;vertical-align:middle;">{{tx_size_short}}</td>
         </tr>
         {{/txs}}
       </tbody>

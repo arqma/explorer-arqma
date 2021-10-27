@@ -28,9 +28,9 @@
 # (c) 2014-2016 cpp-ethereum contributors.
 #------------------------------------------------------------------------------
 
-set(LIBS common;blocks;cryptonote_basic;cryptonote_core;multisig;net;cryptonote_protocol;
-         daemonizer;mnemonics;epee;lmdb;device;blockchain_db;ringct;wallet;cncrypto;
-         easylogging;version;checkpoints;randomx;arqma_mq)
+set(LIBS common;blocks;cryptonote_basic;cryptonote_core;multisig;net;arqma_mq;
+         cryptonote_protocol;daemonizer;mnemonics;epee;lmdb;device;randomx;
+         blockchain_db;ringct;wallet;cncrypto;easylogging;version;checkpoints)
 
 set(Arqma_INCLUDE_DIRS "${CPP_ARQMA_DIR}")
 
@@ -42,7 +42,7 @@ foreach(l ${LIBS})
   find_library(Arqma_${L}_LIBRARY
     NAMES ${l}
     PATHS ${CMAKE_LIBRARY_PATH}
-    PATH_SUFFIXES "/src/${l}" "/src/" "/external/lib${l}" "/lib" "/external/randomarq/" "/src/crypto" "/contrib/epee/src" "/external/easylogging++/" "/external/${l}" "/src/lmdb/liblmdb"
+    PATH_SUFFIXES "/src/${l}" "/src/" "/external/lib${l}" "/lib" "/external/randomarq/" "/src/crypto" "/contrib/epee/src" "/external/easylogging++/" "/external/${l}"
     NO_DEFAULT_PATH)
 
   set(Arqma_${L}_LIBRARIES ${Arqma_${L}_LIBRARY})
@@ -57,10 +57,10 @@ if(EXISTS ${ARQMA_BUILD_DIR}/src/ringct/libringct_basic.a)
   set_property(TARGET ringct_basic PROPERTY IMPORTED_LOCATION ${ARQMA_BUILD_DIR}/src/ringct/libringct_basic.a)
 endif()
 
-if(EXISTS ${ARQMA_BUILD_DIR}/external/libzmq/lib/libzmq.a)
+if(EXISTS ${ARQMA_BUILD_DIR}/libzmq/lib/libzmq.a)
   message(STATUS FindArqma " found in-tree libzmq.a")
   add_library(libzmq STATIC IMPORTED)
-  set_property(TARGET libzmq PROPERTY IMPORTED_LOCATION ${ARQMA_BUILD_DIR}/external/libzmq/lib/libzmq.a)
+  set_property(TARGET libzmq PROPERTY IMPORTED_LOCATION ${ARQMA_BUILD_DIR}/libzmq/lib/libzmq.a)
 endif()
 
 if(EXISTS ${ARQMA_BUILD_DIR}/external/unbound/libunbound.a)
@@ -69,7 +69,7 @@ if(EXISTS ${ARQMA_BUILD_DIR}/external/unbound/libunbound.a)
   set_property(TARGET libunbound PROPERTY IMPORTED_LOCATION ${ARQMA_BUILD_DIR}/external/unbound/libunbound.a)
 endif()
 
-message(STATUS ${ARQMA_SOURCE_DIR}/build/Linux/${ARQMA_BRANCH})
+message(STATUS ${ARQMA_SOURCE_DIR}/build/Linux/dev)
 
 # include arqma headers
 include_directories(
@@ -77,9 +77,9 @@ include_directories(
   ${ARQMA_SOURCE_DIR}/src/crypto
   ${ARQMA_SOURCE_DIR}/external
   ${ARQMA_SOURCE_DIR}/external/randomarq/src
-  ${ARQMA_SOURCE_DIR}/build/Linux/${ARQMA_BRANCH}/release
-  ${ARQMA_SOURCE_DIR}/build/Linux/${ARQMA_BRANCH}/release/external/libzmq/include
+  ${ARQMA_SOURCE_DIR}/build/Linux/dev/release
+  ${ARQMA_SOURCE_DIR}/build/Linux/dev/release/libzmq/include
   ${ARQMA_SOURCE_DIR}/external/unbound/libunbound
   ${ARQMA_SOURCE_DIR}/external/easylogging++
   ${ARQMA_SOURCE_DIR}/contrib/epee/include
-  ${ARQMA_SOURCE_DIR}/lmdb/liblmdb)
+  ${ARQMA_SOURCE_DIR}/external/liblmdb)
