@@ -26,7 +26,7 @@ endif()
 # will need to be changed on release later on
 # along with other paths which had been changed as well
 set(ARQMA_DIR ~/arqma)
-set(ARQMA_BRANCH dev)
++set(ARQMA_BRANCH dev)
 message(STATUS ARQMA_DIR ": ${ARQMA_DIR}")
 
 set(ARQMA_SOURCE_DIR ${ARQMA_DIR}
