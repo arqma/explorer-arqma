@@ -1,0 +1,114 @@
+<div class="Wrapper">
+    <H4 style="margin:5px">Service Node Public Key: {{public_key}}</H4>
+    <H4 style="margin:5px">Operator Address: {{operator_address}}</H4>
+
+    <h2>Metadata</h2>
+    <div class="TitleDivider"></div>
+    <table class="Table metadata">
+        <tr>
+            <td><label>Staking Requirement:</label> {{staking_requirement}}</td>
+            <td><label>Registration Height:</label> <a href="/block/{{register_height}}">{{register_height}}</a></td>
+        </tr>
+
+        <tr>
+            <td><label>Total Reserved:</label> {{total_reserved}}</td>
+            <td>
+                {{#last_contribution_tx_index}}
+                <label>Last Contribution at Height/Index:</label> <a href="/block/{{last_reward_at_block}}">{{last_reward_at_block}}</a>/{{last_contribution_tx_index}}</td>
+                {{/last_contribution_tx_index}}
+                {{^last_contribution_tx_index}}
+                <label>Last Reward At Height:</label> <a href="/block/{{last_reward_at_block}}">{{last_reward_at_block}}</a>
+                {{/last_contribution_tx_index}}
+            </td>
+        </tr>
+
+        <tr>
+            <td><label>Total Contributed:</label> {{total_contributed}}</td>
+            <td><label>Last Uptime Proof:</label> {{last_uptime_proof}}</td>
+        </tr>
+
+        <tr>
+            <td>{{^solo_node}}<label>Operator Fee:</label> {{operator_cut}}%{{/solo_node}}</td>
+            <td>
+                <label>Allowed downtime:</label>
+                {{#credit_remaining}}
+                    {{earned_downtime}} ({{credit_remaining}} blocks)
+                    {{#earned_downtime_below_minimum}} (Note: ≥ 60 blocks required){{/earned_downtime_below_minimum}}
+                {{/credit_remaining}}
+                {{^credit_remaining}}None{{/credit_remaining}}
+            </td>
+        </tr>
+    </table>
+
+    <h2>Service Node Status</h2>
+    <div class="TitleDivider"></div>
+    {{#activation_height}}
+    <p class="sn-active">Registered, staked, and active on the network since block {{activation_height}}.</p>
+    {{/activation_height}}
+    {{#decommission_height}}
+    <p class="sn-decomm"><span class="omg">Decommissioned</span>: this service node is
+    registered and staked, but is currently <span class="omg">decommissioned</span> (since block
+    {{decommission_height}}) for failing to meet service node requirements.
+    {{#credit_remaining}}
+    If it does not return to active duty within {{credit_remaining}} blocks (about
+    {{earned_downtime}}) it will face <span class="omg">deregistration</span>.
+    {{/credit_remaining}}
+    {{^credit_remaining}}
+    The decommission time has expired; service node <span class="omg">deregistration</span> is imminent.
+    {{/credit_remaining}}
+    </p>
+    {{/decommission_height}}
+    {{#awaiting}}
+    <p class="sn-awaiting">Awaiting registration.  This service node has <b>{{stake_remaining}}</b>
+    ARQMA remaining to be contributed. The minimum required stake contribution is <b>{{stake_min_contribution}}</b>.</p>
+    {{/awaiting}}
+
+    <p class="sn-expiration">
+    {{#expiration_block}}
+    This service node is scheduled to expire at block {{expiration_block}}, in approximately {{expiration_time_relative}} ({{expiration_date}} UTC, est.)
+    {{/expiration_block}}
+    {{^expiration_block}}
+    This service node is staking infinitely: no unlock has been initiated by any of its contributors.
+    {{/expiration_block}}
+    </p>
+
+    <h2>{{num_contributors}} Contributor(s)</h2>
+    <div class="TitleDivider"></div>
+
+    <table style="width:100%">
+        <tr class="TableHeader">
+            <td>Contributor</td>
+            <td>Amount</td>
+            <td>Reserved</td>
+        </tr>
+
+        {{#service_node_contributors}}
+        <tr>
+            <td>{{address}}</td>
+            <td>{{amount}}</td>
+            <td>{{reserved}}</td>
+        </tr>
+        {{/service_node_contributors}}
+    </table>
+
+    {{#pending_stakes_size}}
+    <h2>{{pending_stakes_size}} pending_mempool contribution(s)</h2>
+    <div class="TitleDivider"></div>
+
+    <table style="width:100%" class="pending-mempool-stakes">
+      <tr class="TableHeader">
+        <td>Contributor</td>
+        <td class="tx">TX</td>
+        <td>Amount</td>
+      </tr>
+
+      {{#pending_stakes}}
+      <tr>
+        <td>{{address}}</td>
+        <td class="tx"><a href="/tx/{{txid}}</a></td>
+        <td>{{amount}}</td>
+      </tr>
+      {{/pending_stakes}}
+    </table>
+    {{/pending_stakes_size}}
+</div>

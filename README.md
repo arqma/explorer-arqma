@@ -122,7 +122,6 @@ arqblocks, Arqma Onion Blockchain Explorer:
   -t [ --testnet ] [=arg(=1)] (=0)			use testnet blockchain
   -s [ --stagenet ] [=arg(=1)] (=0)			use stagenet blockchain
   --enable-pusher [=arg(=1)] (=1)			enable signed transaction pusher
-  --enable-random-arq [=arg(=1)] (=1)			enable generation of random_arq code
   --enable-mixin-details [=arg(=1)] (=0)		enable mixin details for key images, e.g., timescale, mixin of mixins, in tx context
   --enable-key-image-checker [=arg(=1)] (=1)		enable key images file checker
   --enable-output-key-checker [=arg(=1)] (=1)		enable outputs key file checker
@@ -142,7 +141,7 @@ arqblocks, Arqma Onion Blockchain Explorer:
   -b [ --bc-path ] arg					path to lmdb folder of the blockchain, e.g., ~/.arqma/lmdb
   --ssl-crt-file arg					path to crt file for ssl (https) functionality
   --ssl-key-file arg					path to key file for ssl (https) functionality
-  -d [ --daemon-url ] arg (=http:://127.0.0.1:19994)	Arqma Network daemon url
+  -d [ --daemon-url ] arg (=http://127.0.0.1:19994)	Arqma Network daemon url
 ```
 
 Example usage, defined as bash aliases.

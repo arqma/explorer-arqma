@@ -1,386 +1,388 @@
-<div>
 
-  <div class="buttons-container">
+<div class="Wrapper">
+    <H4 style="margin:5px">TX Hash: {{tx_hash}}</H4>
+    {{#enable_mixins_details}}
+        <H4 style="margin:5px">TX Prefix Hash: {{tx_prefix_hash}}</H4>
+    {{/enable_mixins_details}}
+    <H4 style="margin:5px">TX Public Key: <span id="tx_pub_key">{{tx_pub_key}}</span></H4>
+    <span id="add_tx_pub_keys" style="display: none;">{{add_tx_pub_keys}}</span>
+
+    {{#has_payment_id}}
+        <h4 style="margin:5px">Payment ID: <span id="payment_id">{{payment_id}}</span></h4>
+        <h4 style="margin:5px">Payment ID As ASCII: {{payment_id_as_ascii}}</h4>
+    {{/has_payment_id}}
+
+    {{#has_payment_id8}}
+        <h4 style="margin:5px">Payment ID (encrypted): <span id="payment_id">{{payment_id8}}</span></h4>
+    {{/has_payment_id8}}
+
+
     {{#have_prev_hash}}
-    <a href="/tx/{{prev_hash}}" class="pure-button pure-button-active" title="{{prev_hash}}">&larr; Previous tx</a>
+        <h4>Previous TX: <a href="/tx/{{prev_hash}}">{{prev_hash}}</a></h4>
     {{/have_prev_hash}}
-    
+
     {{#have_next_hash}}
-    <a href="/tx/{{next_hash}}" class="pure-button pure-button-active" title="{{next_hash}}">Next tx &rarr;</a>
+        <h4>Next TX: <a href="/tx/{{next_hash}}">{{next_hash}}</a></h4>
     {{/have_next_hash}}
-  </div>
 
-  <div class="table-header">
-    Transaction Details
-  </div>
-
-  <div class="table-scroller">
-
-    <div class="monospace pure-g">
-
-      <div class="pure-u-1-4 pure-u-md-1-5">
-        <span>Tx hash</span>
-      </div>
-      <div class="pure-u-3-4 pure-u-md-4-5 line-break">
-        <span>{{tx_hash}}</span>
-      </div>
-
-      {{#enable_mixins_details}}
-      <div class="pure-u-1-4 pure-u-md-1-5">
-        <span>Tx prefix hash</span>
-      </div>
-      <div class="pure-u-3-4 pure-u-md-4-5 line-break">
-        <span>{{tx_prefix_hash}}</span>
-      </div>
-      {{/enable_mixins_details}}
-
-      <div class="pure-u-1-4 pure-u-md-1-5">
-        <span>Tx public key</span>
-      </div>
-      <div class="pure-u-3-4 pure-u-md-4-5 line-break">
-        <span>{{tx_pub_key}}</span>
-        <span id="add_tx_pub_keys" style="display: none;">{{add_tx_pub_keys}}</span>
-      </div>
-
-      {{#has_payment_id}}
-      <div class="pure-u-1-4 pure-u-md-1-5">
-        <span>Payment id</span>
-      </div>
-      <div class="pure-u-3-4 pure-u-md-4-5 line-break">
-        <span id="payment_id">{{payment_id}}</span>
-      </div>
-      <div class="pure-u-1-4 pure-u-md-1-5">
-        <span>Payment id as ascii</span>
-      </div>
-      <div class="pure-u-3-4 pure-u-md-4-5">
-        <span>{{payment_id_as_ascii}}</span>
-      </div>
-      {{/has_payment_id}}
-      
-      {{#has_payment_id8}}
-      <div class="pure-u-1-4 pure-u-md-1-5">
-        <span>Payment id (encrypted)</span>
-      </div>
-      <div class="pure-u-3-4 pure-u-md-4-5">
-        <span id="payment_id">{{payment_id8}}</span>
-      </div>
-      {{/has_payment_id8}}
-
-      {{^have_raw_tx}}
-      <div class="pure-u-1-4 pure-u-md-1-5">
-        <span>Age [y:d:h:m:s]</span>
-      </div>
-      <div class="pure-u-3-4 pure-u-md-4-5">
-        <span>{{delta_time}}</span>
-      </div>
-
-      <div class="pure-u-1-4 pure-u-md-1-5">
-        <span>Timestamp [UCT] (epoch)</span>
-      </div>
-      <div class="pure-u-3-4 pure-u-md-4-5">
-        <span>{{blk_timestamp}} ({{blk_timestamp_uint}})</span>
-      </div>
-      {{/have_raw_tx}}
-
-      <div class="pure-u-1-4 pure-u-md-1-5">
-        <span>Block</span>
-      </div>
-      <div class="pure-u-3-4 pure-u-md-4-5">
-        {{#is_mined}}
-        <span><a href="/block/{{blk_height}}">{{blk_height}}</a> ({{confirmations}} confirmations)</span>
-        {{/is_mined}}
-        {{^is_mined}}
-        <span>{{blk_height}} ({{confirmations}} confirmations)</span>
-        {{/is_mined}}
-      </div>
-      
-      <div class="pure-u-1-4 pure-u-md-1-5">
-        <span>Fee (per_kB)</span>
-      </div>
-      <div class="pure-u-3-4 pure-u-md-4-5">
-        <span>{{tx_fee}} ({{payed_for_kB}})</span>
-      </div>
-      
-      <div class="pure-u-1-4 pure-u-md-1-5">
-        <span>Tx size</span>
-      </div>
-      <div class="pure-u-3-4 pure-u-md-4-5">
-        <span>{{tx_size}} kB</span>
-      </div>
-      
-      <div class="pure-u-1-4 pure-u-md-1-5">
-        <span>Tx version</span>
-      </div>
-      <div class="pure-u-3-4 pure-u-md-4-5">
-        <span>{{tx_version}}</span>
-      </div>
-      
-      <div class="pure-u-1-4 pure-u-md-1-5">
-        <span>RingCT type</span>
-      </div>
-      <div class="pure-u-3-4 pure-u-md-4-5">
-        <span>{{rct_type}}</span>
-      </div>
-      
-      <div class="pure-u-1-4 pure-u-md-1-5">
-        <span>Extra</span>
-      </div>
-      <div class="pure-u-3-4 pure-u-md-4-5 line-break">
-        <span>{{extra}}</span>
-      </div>
-      
-    </div>
-  </div>
-
-  <div class="table-header">
-    Outputs
-  </div>
-  
-  <div class="table-scroller">
-    <div class="table-container">
-      
-      <div class="table-subheader">
-        {{outputs_no}} output(s) for total of {{outputs_arq_sum}} ARQ
-      </div>
-
-      <table class="pure-table pure-table-striped">
-	<thead>
-	  <tr>
-            <th>stealth address</th>
-            <th style="width:140px">amount</th>
-            <th style="width:160px">amount idx</th>
-	  </tr>
-	</thead>
-	<tbody>
-	  {{#outputs}}
-	  <tr>
-            <td>{{output_idx}}: {{out_pub_key}}</td>
-            <td>{{amount}}</td>
-            <td>{{amount_idx}} of {{num_outputs}}</td>
-	  </tr>
-	  {{/outputs}}
-	</tbody>
-      </table>
-    </div>
-  </div>
-
-  {{^have_raw_tx}}
-  <div class="tabs-scroller">
-    <div class="tabs-container">
-
-      <div class="tabs">
-
-	<div class="tab">
-          <input type="radio" id="tab-1" name="tab-group-1" checked>
-          <label for="tab-1">Decode outputs</label>
-          <div class="content">
-            <p style="margin: 0px">
-              Check which outputs belong to given ARQ address/subaddress and viewkey<br/>
-              Note: address/subaddress and viewkey are sent to the server, as the calculations are done on the server side
-            </p>
-            <form action="/myoutputs" method="post" class="pure-form">
-              <input type="hidden" name="tx_hash" value="{{tx_hash}}"/>
-              <input type="text" name="arq_address" placeholder="ARQ address/subaddress" class="pure-input-1" />
-              <input type="text" name="viewkey" placeholder="Private viewkey" class="pure-input-1" />
-              <input type="hidden" name="raw_tx_data" value="{{raw_tx_data}}" />
-              <!--above raw_tx_data field only used when checking raw tx data through tx pusher-->
-
-              <input type="submit" value="Decode outputs" class="pure-button pure-button-active" />
-            </form>
-          </div>
-	</div>
-
-	<div class="tab">
-          <input type="radio" id="tab-2" name="tab-group-1">
-          <label for="tab-2">Prove sending</label>
-
-          <div class="content">
-            <p style="margin: 0px">
-              Prove to someone that you have sent them ARQ in this transaction<br/>
-              Tx private key can be obtained using <code>get_tx_key</code> command in <code>arqma-wallet-cli</code><br/>
-              Note: address/subaddress and tx private key are sent to the server, as the calculations are done on the server side
-            </p>
-            <form action="/prove" method="post" class="pure-form">
-              <input type="hidden" name="txhash" value="{{tx_hash}}" />
-              <input type="text" name="txprvkey" placeholder="Tx private key" class="pure-input-1" />
-              <input type="hidden" name="raw_tx_data" value="{{raw_tx_data}}" />
-              <!--above raw_tx_data field only used when checking raw tx data through tx pusher-->
-              <input type="text" name="arq_address" placeholder="Recipient's ARQ address/subaddress" class="pure-input-1" />
-
-              <input type="submit" value="Prove sending" class="pure-button pure-button-active" />
-            </form>
-          </div>
-	</div>
-      </div>
-    </div>
-  </div>
-
-  {{/have_raw_tx}}
-
-  {{#has_inputs}}
-  {{#enable_mixins_details}}
-  <div class="table-header">
-    Input ring size time scale
-  </div>
-  
-  <div class="table-scroller">
-    <div class="table-container">
-      
-      <div class="table-subheader">
-        (from {{min_mix_time}} till {{max_mix_time}};
-        resolution: {{timescales_scale}} days{{#have_raw_tx}}; R - real ring member {{/have_raw_tx}})
-      </div>
-
-      <ul class="margin" style="padding:0">
-        {{#timescales}}
-        <li  style="list-style-type:none;text-align:center;font-size:8px;margin-bottom:8px">|{{timescale}}|</li>
-        {{/timescales}}
-      </ul>
-    </div>
-  </div>
-  {{/enable_mixins_details}}
-
-  <div class="table-header">
-  {{^inputs_arq_sum_not_zero}}
-  {{inputs_no}} input(s) for total of {{inputs_arq_sum}} ARQ
-  {{/inputs_arq_sum_not_zero}}
-  {{#inputs_arq_sum_not_zero}}
-  {{^have_any_unknown_amount}}
-  {{inputs_no}} inputs(s) for total of {{inputs_arq_sum}} ARQ
-  {{/have_any_unknown_amount}}
-  {{#have_any_unknown_amount}}
-  {{inputs_no}} inputs(s) for total of at least {{inputs_arq_sum}} ARQ
-  {{/have_any_unknown_amount}}
-  {{/inputs_arq_sum_not_zero}}
-  </div>
-
-  <div class="table-scroller">
-    <div class="table-container multi-table-container">
-
-      {{#inputs}}
-
-      <div class="table-subheader">
-        Key image  {{input_idx}}: {{in_key_img}}
-
-        {{#have_raw_tx}}
-        , Already spent:
-        {{#already_spent}}
-        <span style="color: red; font-weight: bold;">True</span>
-        {{/already_spent}}
-        {{^already_spent}}
-        False
-        {{/already_spent}}
+    <h2>Metadata</h2>
+    <div class="TitleDivider"></div>
+    <table class="Table">
+        {{^have_raw_tx}}
+        <tr>
+            <td>Timestamp: {{blk_timestamp_uint}}</td>
+            <td>Timestamp [UTC]: {{blk_timestamp}}</td>
+            <td>Age [y:d:h:m:s]: {{delta_time}}</td>
+        </tr>
         {{/have_raw_tx}}
 
-        , Amount: {{amount}}
+        <tr>
+            <td>Block: <a href="/block/{{blk_height}}">{{blk_height}}</a></td>
+            <td>Fee (Per kB): {{tx_fee}} ({{payed_for_kB}})</td>
+            <td>TX Size: {{tx_size}} kB</td>
+        </tr>
+        <tr>
+            <td>TX Version / Type: {{tx_version}} / {{tx_type}}</td>
+            <td>No Of Confirmations: {{confirmations}}</td>
+            <td>RingCT / RingCT Type:  {{#is_ringct}}Yes / {{rct_type}}{{/is_ringct}}{{^is_ringct}}No{{/is_ringct}}</td>
+        </tr>
+
+        {{#is_miner_tx}}
+        <tr>
+          <td>Service Node Winner:</td><td><a href="/service_node/{{service_node_winner}}">{{service_node_winner}}</a></td>
+        </tr>
+
+        <tr></tr>
+        {{/is_miner_tx}}
+
+        <tr>
+            <td colspan="3" style="max-width:700px;word-wrap:break-word;">Extra: {{extra}}</td>
+        </tr>
+    </table>
+
+    {{#is_state_change}}
+        {{#state_change_deregister}}
+        <h2>Service Node Deregister Metadata</h2>
+        {{/state_change_deregister}}
+        {{#state_change_decommission}}
+        <h2>Service Node Decommission Metadata</h2>
+        {{/state_change_decommission}}
+        {{#state_change_recommission}}
+        <h2>Service Node Recommission Metadata</h2>
+        {{/state_change_recommission}}
+        {{#state_change_ip_change_penalty}}
+        <h2>Service Node IP Change Metadata</h2>
+        {{/state_change_ip_change_penalty}}
+        <div class="TitleDivider"></div>
+        {{#state_change_have_pubkey_info}}
+        <p class="state-change-pubkey">Service Node Public Key: <a href="/service_node/{{state_change_service_node_pubkey}}">{{state_change_service_node_pubkey}}</a></p>
+        {{/state_change_have_pubkey_info}}
+        <p>Service Node Index: {{state_change_service_node_index}}</p>
+        <p>Block Height: <a href="/block/{{state_change_block_height}}">{{state_change_block_height}}</a></p>
+
+        <table class="Table">
+            <tr class="TableHeader">
+                <th class="voter-index">Voters Quorum Index</th>
+                {{#state_change_have_pubkey_info}}
+                <th class="voter-pubkey">Voter Public Key</th>
+                {{/state_change_have_pubkey_info}}
+                <th class="voter-signature">Signature</th>
+            </tr>
+
+            {{#state_change_vote_array}}
+            <tr>
+                <td class="voter-index">{{state_change_voters_quorum_index}}</td>
+                {{#state_change_have_pubkey_info}}
+                <td class="voter-pubkey"><a href="/service_node/{{state_change_voter_pubkey}}">{{state_change_voter_pubkey}}</a></td>
+                {{/state_change_have_pubkey_info}}
+                <td class="voter-signature" title="{{state_change_signature}}">{{state_change_signature}}</td>
+            </tr>
+            {{/state_change_vote_array}}
+        </table>
+    {{/is_state_change}}
+
+    {{#have_register_info}}
+        <h2>Service Node Register Metadata</h2>
+        <div class="TitleDivider"></div>
+        <p>Service Node Public Key: {{register_service_node_pubkey}}</p>
+        <p>Portions For Operator: {{register_portions_for_operator}}%</p>
+        <p>Expiration Timestamp: {{register_expiration_timestamp_friendly}} ({{register_expiration_timestamp}}) or {{register_expiration_timestamp_relative}}</p>
+        <p>Signature: {{register_signature}}</p>
+
+        <h2>Service Node Register Payout Addresses</h2>
+        <div class="TitleDivider"></div>
+        <table class="Table">
+            <tr class="TableHeader">
+                <td>Address</td>
+                <td>Portions</td>
+            </tr>
+
+            {{#register_array}}
+            <tr>
+                <td>{{register_address}}</td>
+                <td>{{register_portions}}%</td>
+            </tr>
+            {{/register_array}}
+        </table>
+    {{/have_register_info}}
+
+    {{#have_contribution_info}}
+        <h2>Service Node Contribution</h2>
+        <div class="TitleDivider"></div>
+        <p>Service Node Public Key: {{contribution_service_node_pubkey}}</p>
+        <p>Contributor Address: {{contribution_address}}</p>
+        <p>Contribution Amount: {{contribution_amount}} LOKI</p>
+    {{/have_contribution_info}}
+
+    {{#have_unlock_info}}
+      <h2>Service Node Unlock</h2>
+      <p class="unlock-pubkey">Service Node Public Key: <a href="/service_node/{{unlock_service_node_pubkey}}">{{unlock_service_node_pubkey}}</a></p>
+      <p>Unlock key image: {{unlock_key_image}}</p>
+      <p>Unlock signature: {{unlock_signature}}</p>
+    {{/have_unlock_info}}
+
+  <h2>Outputs</h2>
+  <h4 class="Subtitle">{{outputs_no}} output(s) for total of {{outputs_arq_sum}} ARQ</h4>
+  <div class="TitleDivider"></div>
+  <div>
+      <table class="Table">
+          <tr class="TableHeader">
+              <td>Stealth Address</td>
+              <td>Amount</td>
+              <td>Amount Index</td>
+          </tr>
+          {{#outputs}}
+          <tr>
+              <td>{{output_idx}}: {{out_pub_key}}</td>
+              <td>{{amount}}</td>
+              <td>{{amount_idx}} of {{num_outputs}}</td>
+          </tr>
+          {{/outputs}}
+      </table>
+  </div>
+
+    {{^have_raw_tx}}
+    <div>
+        <div class="tabs">
+            <div class="tab">
+                <input type="radio" id="tab-1" name="tab-group-1" checked>
+                <label for="tab-1">Decode Outputs</label>
+                <div class="content">
+                    <p style="margin: 0px">Check which outputs belong to given Arqma address/subaddress and viewkey</p>
+                    <p style="margin: 0px">
+                        For RingCT transactions, outputs amounts are also decoded
+                        <br/>
+                        Note: address/Subaddress and viewkey are sent to the server, as the calculations are done on the server side
+                    </p>
+                    <form action="/myoutputs" method="post" style="width:100%; margin-top:2px" class="style-1">
+                        <input type="hidden" name="tx_hash" value="{{tx_hash}}"><br/>
+                        <input type="text" name="arq_address" size="110" placeholder="Arqma Address/Subaddress"><br/>
+                        <input type="text" name="viewkey" size="110" placeholder="Private Viewkey" style="margin-top:5px"><br/>
+                        <input type="hidden" name="raw_tx_data" value="{{raw_tx_data}}">
+                        <!--above raw_tx_data field only used when checking raw tx data through tx pusher-->
+                        <input type="submit" class="PageButton" value="Decode Outputs" style="min-width: 10em; margin-top:5px" >
+                    </form>
+                </div>
+            </div>
+
+            <div class="tab">
+                <input type="radio" id="tab-2" name="tab-group-1">
+                <label for="tab-2">Prove Sending</label>
+
+                <div class="content">
+                    <p style="margin: 0px">Prove to someone that you have sent them Arqma in this transaction</p>
+                    <p style="margin: 0px">
+                        TX private key can be obtained using <i>get_tx_key</i>
+                        command in  <i>arqma-wallet-cli</i> command line tool
+                        <br/>
+                        Note: Address/Subaddress and TX private key are sent to the server, as the calculations are done on the server side
+                    </p>
+                    <form action="/prove" method="post" style="width:100%;margin-top:2px" class="style-1">
+                       <input type="hidden" name="txhash" value="{{tx_hash}}"><br/>
+                       <input type="text" name="txprvkey" size="120" placeholder="TX Private Key"><br/>
+                        <input type="hidden" name="raw_tx_data" value="{{raw_tx_data}}">
+                        <!--above raw_tx_data field only used when checking raw tx data through tx pusher-->
+                       <input type="text" name="arqaddress" size="120" placeholder="Recipient's Arqma Address/Subaddress" style="margin-top:5px"><br/>
+                       <input type="submit" class="PageButton" value="Prove Sending" style="min-width: 10em; margin-top:5px">
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+    {{/have_raw_tx}}
+
+{{#has_inputs}}
+    <div style="height: 1em"></div>
+
+    {{#enable_mixins_details}}
+      <h3>Inputs' ring size time scale (from {{min_mix_time}} till {{max_mix_time}};
+        resolution: {{timescales_scale}} days{{#have_raw_tx}}; R - real ring member {{/have_raw_tx}})
+      </h3>
+      <div class="center">
+        <ul class="center">
+          {{#timescales}}
+            <li  style="list-style-type: none; text-align: center; font-size: 8px">|{{timescale}}|</li>
+          {{/timescales}}
+        </ul>
       </div>
-      
-      {{#enable_mixins_details}}
-      <table class="pure-table pure-table-striped">
-	<thead>
+    {{/enable_mixins_details}}
+
+    {{^inputs_arq_sum_not_zero}}
+        <h3>{{inputs_no}} input(s) for total of {{inputs_arq_sum}} ARQ</h3>
+    {{/inputs_arq_sum_not_zero}}
+    {{#inputs_arq_sum_not_zero}}
+        {{^have_any_unknown_amount}}
+            <h3>{{inputs_no}} inputs(s) for total of {{inputs_arq_sum}} ARQ</h3>
+        {{/have_any_unknown_amount}}
+        {{#have_any_unknown_amount}}
+            <h3>{{inputs_no}} inputs(s) for total of at least {{inputs_arq_sum}} ARQ</h3>
+        {{/have_any_unknown_amount}}
+    {{/inputs_arq_sum_not_zero}}
+
+    {{#show_part_of_inputs}}
+        <p style="margin-top: 2px">
+           Only {{max_no_of_inputs_to_show}} inputs are shown. To see all,
+            click "<a href="/tx/{{tx_hash}}/1">More Details</a>"
+        </p>
+    {{/show_part_of_inputs}}
+
+    <div>
+       <table class="Table">
+      {{#inputs}}
+        <tr>
+          <td style="text-align: left;">
+              Key Image  {{input_idx}}: {{in_key_img}}
+              {{#have_raw_tx}}
+               Already spent:
+                {{#already_spent}}
+                    <span style="color: red; font-weight: bold;">True</span>
+                {{/already_spent}}
+              {{^already_spent}}
+                False
+              {{/already_spent}}
+
+              {{/have_raw_tx}}
+          </td>
+          <td>Amount: {{amount}}</td>
+       </tr>
           <tr>
-            <th>ring members</th>
-            {{#have_raw_tx}}
-            <th style="width:60px">is real</th>
-            {{/have_raw_tx}}
-            <th style="width:80px">blk</th>
-            <th style="width:40px">ring size</th>
-            <th style="width:50px">in/out</th>
-            <th style="width:150px">timestamp</th>
-            <th style="width:130px">age [y:d:h:m:s]</th>
-          </tr>
-	</thead>
-	<tbody>
-          {{#mixins}}
+            <td colspan="2">
+                {{#enable_mixins_details}}
+                    <table style="width:100%; margin-bottom:20px">
+                    <tr class="TableHeader">
+                      <td>Ring Members</td>
+                      {{#have_raw_tx}}
+                        <td>Is It Real?</td>
+                      {{/have_raw_tx}}
+                      <td>Blk</td>
+                      <td>Ring Size</td>
+                      <td>In/out</td>
+                      <td>Timestamp</td>
+                      <td>Age [y:d:h:m:s]</td>
+
+                    </tr>
+                 {{#mixins}}
+                    <tr>
+                      <td> - {{mix_idx}}: <a href="/tx/{{mix_tx_hash}}">{{mix_pub_key}}</a></td>
+                      {{#have_raw_tx}}
+                        {{#mix_is_it_real}}
+                            <td><span style="color: #008009;font-weight: bold">{{mix_is_it_real}}</span></td>
+                        {{/mix_is_it_real}}
+                        {{^mix_is_it_real}}
+                            <td>{{mix_is_it_real}}</td>
+                        {{/mix_is_it_real}}
+                      {{/have_raw_tx}}
+                      <td>{{mix_blk}}</td>
+                      <td>{{mix_mixin_no}}</td>
+                      <td>{{mix_inputs_no}}/{{mix_outputs_no}}</td>
+                      <td>{{mix_timestamp}}</td>
+                      <td>{{mix_age}}</td>
+                    </tr>
+                 {{/mixins}}
+                 </table>
+                {{/enable_mixins_details}}
+                {{^enable_mixins_details}}
+                <table style="width:100%; margin-bottom:20px">
+                    <tr class="TableHeader">
+                        <td>Ring Members</td>
+                        {{#have_raw_tx}}
+                            <td>Is it real?</td>
+                        {{/have_raw_tx}}
+                        <td>Blk</td>
+                    </tr>
+                    {{#mixins}}
+                    <tr>
+                        <td> - {{mix_idx}}: {{mix_pub_key}}</td>
+                        {{#have_raw_tx}}
+                            {{#mix_is_it_real}}
+                                <td><span style="color: #008009;font-weight: bold">{{mix_is_it_real}}</span></td>
+                            {{/mix_is_it_real}}
+                            {{^mix_is_it_real}}
+                                <td>{{mix_is_it_real}}</td>
+                            {{/mix_is_it_real}}
+                        {{/have_raw_tx}}
+                        <td>{{mix_blk}}</td>
+                    </tr>
+                    {{/mixins}}
+                </table>
+                {{/enable_mixins_details}}
+           </td>
+         </tr>
+
+<!--
+        {{#with_ring_signatures}}
+
           <tr>
-            <td> - {{mix_idx}}: <a href="/tx/{{mix_tx_hash}}">{{mix_pub_key}}</a></td>
-            {{#have_raw_tx}}
-            {{#mix_is_it_real}}
-            <td><span style="color: #008009;font-weight: bold">{{mix_is_it_real}}</span></td>
-            {{/mix_is_it_real}}
-            {{^mix_is_it_real}}
-            <td>{{mix_is_it_real}}</td>
-            {{/mix_is_it_real}}
-            {{/have_raw_tx}}
-            <td>{{mix_blk}}</td>
-            <td>{{mix_mixin_no}}</td>
-            <td>{{mix_inputs_no}}/{{mix_outputs_no}}</td>
-            <td>{{mix_timestamp}}</td>
-            <td>{{mix_age}}</td>
-          </tr>
-          {{/mixins}}
-	</tbody>
-      </table>
-      {{/enable_mixins_details}}
-      {{^enable_mixins_details}}
-      <table class="pure-table pure-table-striped">
-	<thead>
-          <tr>
-            <th>ring members</th>
-            {{#have_raw_tx}}
-            <th>Is it real?</th>
-            {{/have_raw_tx}}
-            <th>blk</th>
-          </tr>
-	</thead>
-	<tbody>
-          {{#mixins}}
-          <tr>
-            <td> - {{mix_idx}}: {{mix_pub_key}}</td>
-            {{#have_raw_tx}}
-            {{#mix_is_it_real}}
-            <td><span style="color: #008009;font-weight: bold">{{mix_is_it_real}}</span></td>
-            {{/mix_is_it_real}}
-            {{^mix_is_it_real}}
-            <td>{{mix_is_it_real}}</td>
-            {{/mix_is_it_real}}
-            {{/have_raw_tx}}
-            <td>{{mix_blk}}</td>
-          </tr>
-          {{/mixins}}
-	</tbody>
-      </table>
-      {{/enable_mixins_details}}
+            <td colspan="2">
+                <table style="width:100%; margin-bottom:20px">
+                <tr>
+                  <td>Ring signature</td>
+                </tr>
+                {{#ring_sigs}}
+                <tr>
+                    <td>{{ring_sig}}</td>
+                </tr>
+                {{/ring_sigs}}
+             </table>
+           </td>
+         </tr>
+
+        {{/with_ring_signatures}}
+-->
 
       {{/inputs}}
-      
-    </div>
-  </div>
-  
-  {{/has_inputs}}
-
-  {{#show_part_of_inputs}}
-  <p>
-    Only {{max_no_of_inputs_to_show}} inputs are shown. To see all,
-    click more details.
-  </p>
-  {{/show_part_of_inputs}}
-  
-  {{^have_raw_tx}}
-  
-  {{^with_ring_signatures}}
-  {{#show_more_details_link}}
-  <div class="margin padding text-center">
-    <a class="pure-button pure-button-active" href="/tx/{{tx_hash}}/1">More details</a>
-  </div>
-  {{/show_more_details_link}}
-  {{/with_ring_signatures}}
-
-  {{#with_ring_signatures}}
-  <div id="decoded-inputs">
-    <pre>
-      <code>
-        {{tx_json}}
-      </code>
-    </pre>
+      </table>
   </div>
 
-  <div class="margin padding text-center">
-    <a class="pure-button pure-button-active" href="/tx/{{tx_hash}}">Less details</a>
-  </div>
-  
-  {{/with_ring_signatures}}
-  
-  {{/have_raw_tx}}
+
+ {{/has_inputs}}
+
+{{^have_raw_tx}}
+    <div style="height: 1em;"></div>
+    {{^with_ring_signatures}}
+        {{#show_more_details_link}}
+            <h5 style="margin-top:1px">
+                <a href="/tx/{{tx_hash}}/1">More Details</a>
+                {{#enable_as_hex}}
+                    | <a href="/txhex/{{tx_hash}}">TX As Hex</a>
+                    | <a href="/ringmembershex/{{tx_hash}}">TX Ring Members As Hex</a>
+                {{/enable_as_hex}}
+            </h5>
+        {{/show_more_details_link}}
+    {{/with_ring_signatures}}
+
+    {{#with_ring_signatures}}
+        <div class="TitleDivider"></div>
+        <div id="decoded-inputs">
+            <div style="border: 1px solid #008552; margin-top: 1em; padding: 1em; background-color: rgba(0, 0, 0, 0.2)">
+                <code class="center" style="white-space: pre-wrap; font-size: 1.5em;">
+                    {{tx_json}}
+                </code>
+            </div>
+        </div>
+        <br/><br/>
+        <p style="margin-top:1px"><a href="/tx/{{tx_hash}}">Less Details</a></p>
+    {{/with_ring_signatures}}
+{{/have_raw_tx}}
 
 </div>

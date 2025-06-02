@@ -1,4 +1,9 @@
-find_package(Boost 1.62.0 QUIET REQUIRED)
+
+if(POLICY CMP0167)
+  cmake_policy(SET CMP0167 NEW)
+endif()
+
+find_package(Boost 1.68 REQUIRED)
 
 set(mstch_INCLUDE_DIR
       ${PROJECT_SOURCE_DIR}/include CACHE STRING "mstch include directory")
@@ -6,7 +11,8 @@ set(mstch_INCLUDE_DIR
 # /home/mwo/crow-monero-test/ext/mstch
 message(${PROJECT_SOURCE_DIR})
 #
-include_directories(SYSTEM ${Boost_INCLUDE_DIR})
+include_directories(
+    ${Boost_INCLUDE_DIR})
 
 set(SRC
     state/in_section.cpp

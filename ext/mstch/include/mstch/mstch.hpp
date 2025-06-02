@@ -6,7 +6,9 @@
 #include <memory>
 #include <functional>
 
+#include <boost/optional.hpp>
 #include <boost/variant.hpp>
+#include <boost/utility/string_view.hpp>
 
 namespace mstch {
 
@@ -112,11 +114,11 @@ using node = boost::make_recursive_variant<
     std::nullptr_t, std::string, int, double, bool, uint64_t, int64_t, uint32_t,
     internal::lambda_t<boost::recursive_variant_>,
     std::shared_ptr<internal::object_t<boost::recursive_variant_>>,
-    internal::map<const std::string, boost::recursive_variant_>,
-    std::vector<boost::recursive_variant_>>::type;
+    internal::map<std::string, boost::recursive_variant_>,
+    std::vector<boost::recursive_variant_>, boost::string_view>::type;
 using object = internal::object_t<node>;
 using lambda = internal::lambda_t<node>;
-using map = internal::map<const std::string, node>;
+using map = internal::map<std::string, node>;
 using array = std::vector<node>;
 
 std::string render(
@@ -125,4 +127,8 @@ std::string render(
     const std::map<std::string,std::string>& partials =
         std::map<std::string,std::string>());
 
+std::string render(
+  const std::string& tmplt,
+  const node& root,
+  std::function<boost::optional<std::string>(const std::string&)> partial_loader);
 }

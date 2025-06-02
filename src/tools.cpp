@@ -120,7 +120,7 @@ inline bool
 is_separator(char c)
 {
     // default linux path separator
-    const char separator = PATH_SEPARARTOR;
+    const char separator = PATH_SEPARATOR;
 
     return c == separator;
 }
@@ -927,6 +927,7 @@ decode_ringct(rct::rctSig const &rv,
         {
             case rct::RCTTypeSimple:
             case rct::RCTTypeBulletproof:
+            case rct::RCTTypeBulletproof2:
             case rct::RCTTypeSimpleBulletproof:
                 amount = rct::decodeRctSimple(rv,
                                               rct::sk2rct(scalar1),
@@ -1135,7 +1136,7 @@ is_output_ours(const size_t &output_index,
     {
         cerr << "Cant get dervied key for: "  << "\n"
              << "pub_tx_key: " << pub_tx_key  << " and "
-             << "prv_view_key" << private_view_key << endl;
+             << "prv_view_key" << epee::string_tools::pod_to_hex(unwrap(unwrap(private_view_key))) << endl;
 
         return false;
     }
@@ -1228,7 +1229,7 @@ get_human_readable_timestamp(uint64_t ts)
 
     gmtime_r(&tt, &tm);
 
-    strftime(buffer, sizeof(buffer), "%Y-%m-%d %I:%M:%S", &tm);
+    strftime(buffer, sizeof(buffer), "%Y-%m-%d %H:%M:%S", &tm);
 
     return std::string(buffer);
 }
@@ -1254,6 +1255,62 @@ string
 tx_to_hex(transaction const &tx)
 {
     return epee::string_tools::buff_to_hex_nodelimer(t_serializable_object_to_blob(tx));
+}
+
+std::string bytes_to_hex(char const *bytes, int len)
+{
+  std::string result;
+  result.reserve(len * 2);
+
+  static char const _4bits_to_hex_char[] = {'0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C', 'D', 'E', 'F'};
+  for (int i = 0; i < len; i++)
+  {
+    char byte = bytes[i];
+    char hex01 = (byte >> 0) & 0xF;
+    char hex02 = byte >> 4;
+
+    result.push_back(_4bits_to_hex_char[hex01]);
+    result.push_back(_4bits_to_hex_char[hex02]);
+  }
+
+  return result;
+}
+
+void
+get_human_readable_timestamp(uint64_t ts, std::string *result)
+{
+  result->clear();
+  if (ts < 1234567890)
+    return;
+
+  char buf[64];
+  time_t tt = ts;
+  struct tm tm;
+  gmtime_r(&tt, &tm);
+  strftime(buf, sizeof(buf), "%Y-%m-%d %H:%M:%S", &tm);
+  *result = buf;
+}
+
+std::string get_human_timespan(time_t dt)
+{
+  std::ostringstream ss;
+  if (dt < 90)
+    ss << dt << " seconds";
+  else if (dt < 90 * 60)
+    ss << std::setprecision(1) << std::fixed << dt/60. << " minutes";
+  else if (dt < 36 * 3600)
+    ss << std::setprecision(1) << std::fixed << dt/3600. << " hours";
+  else
+    ss << std::setprecision(dt < 99.5 * 3600 ? 1 : 0) << std::fixed << dt/86400. << " days";
+  return ss.str();
+}
+
+std::string get_human_time_ago(time_t t, time_t now)
+{
+  if (t == now)
+    return "now";
+  std::string span = get_human_timespan(t > now ? t - now : now - t);
+  return t > now ? "in " + span : span + " ago";
 }
 
 }

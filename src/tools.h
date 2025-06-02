@@ -5,16 +5,6 @@
 #ifndef XMREG01_TOOLS_H
 #define XMREG01_TOOLS_H
 
-#define PATH_SEPARARTOR '/'
-
-#define ARQ_AMOUNT(value) \
-    static_cast<double>(value) / 1e9
-
-#define REMOVE_HASH_BRAKETS(a_hash) \
-    a_hash.substr(1, a_hash.size()-2)
-
-
-
 #include "arqma_headers.h"
 
 #include "../ext/fmt/ostream.h"
@@ -32,6 +22,18 @@
 #include <algorithm>
 #include <type_traits>
 #include <regex>
+
+constexpr char PATH_SEPARATOR('/');
+
+constexpr double ARQ_AMOUNT(double value)
+{
+  return value / 1e9;
+}
+
+inline std::string REMOVE_HASH_BRACKETS(const std::string &a_hash)
+{
+  return a_hash.substr(1, a_hash.size() - 2);
+}
 
 /**
  * Some helper functions used in the example.
@@ -368,6 +370,14 @@ pause_execution(uint64_t no_seconds, const string &text = "now");
 
 string
 tx_to_hex(transaction const& tx);
+
+std::string bytes_to_char(const char *bytes, int len);
+
+void
+get_human_readable_timestamp(uint64_t ts, std::string *result);
+
+std::string get_human_timespan(time_t dt);
+std::string get_human_time_ago(time_t t, time_t now);
 
 }
 

@@ -1,6 +1,5 @@
 #define CROW_ENABLE_SSL
 
-
 #include "src/page.h"
 
 #include "ext/crow/crow.h"
@@ -19,7 +18,8 @@ namespace myxmr
 {
 struct htmlresponse : public crow::response
 {
-  htmlresponse(string&& _body) : crow::response {std::move(_body)}
+  htmlresponse(string&& _body)
+    : crow::response {std::move(_body)}
   {
     add_header("Content-Type", "text/html; charset=utf-8");
   }
@@ -69,10 +69,10 @@ main(int ac, const char* av[])
     auto enable_output_key_checker_opt = opts.get_option<bool>("enable-output-key-checker");
     auto enable_autorefresh_option_opt = opts.get_option<bool>("enable-autorefresh-option");
     auto enable_pusher_opt             = opts.get_option<bool>("enable-pusher");
-    auto enable_random_arq_opt         = opts.get_option<bool>("enable-random-arq");
     auto enable_mixin_details_opt      = opts.get_option<bool>("enable-mixin-details");
     auto enable_json_api_opt           = opts.get_option<bool>("enable-json-api");
     auto enable_as_hex_opt             = opts.get_option<bool>("enable-as-hex");
+    auto enable_mixin_guess_opt        = opts.get_option<bool>("enable-mixin-guess");
     auto concurrency_opt               = opts.get_option<size_t>("concurrency");
     auto enable_emission_monitor_opt   = opts.get_option<bool>("enable-emission-monitor");
 
@@ -92,11 +92,11 @@ main(int ac, const char* av[])
         cryptonote::network_type::STAGENET : cryptonote::network_type::MAINNET;
 
     bool enable_pusher                {*enable_pusher_opt};
-    bool enable_random_arq            {*enable_random_arq_opt};
     bool enable_key_image_checker     {*enable_key_image_checker_opt};
     bool enable_autorefresh_option    {*enable_autorefresh_option_opt};
     bool enable_output_key_checker    {*enable_output_key_checker_opt};
     bool enable_mixin_details         {*enable_mixin_details_opt};
+    bool enable_mixin_guess           {*enable_mixin_guess_opt};
     bool enable_json_api              {*enable_json_api_opt};
     bool enable_as_hex                {*enable_as_hex_opt};
     bool enable_emission_monitor      {*enable_emission_monitor_opt};
@@ -254,12 +254,12 @@ main(int ac, const char* av[])
                           daemon_url,
                           nettype,
                           enable_pusher,
-                          enable_random_arq,
                           enable_as_hex,
                           enable_key_image_checker,
                           enable_output_key_checker,
                           enable_autorefresh_option,
                           enable_mixin_details,
+                          enable_mixin_guess,
                           no_blocks_on_index,
                           mempool_info_timeout,
                           *testnet_url,
@@ -304,34 +304,26 @@ main(int ac, const char* av[])
         return myxmr::htmlresponse(arqblocks.show_tx(remove_bad_chars(tx_hash)));
     });
 
-    if(enable_random_arq)
-    {
-        CROW_ROUTE(app, "/random_arq/<uint>")
-        ([&](size_t block_height) {
-            return myxmr::htmlresponse(arqblocks.show_random_arq(block_height));
-        });
-    }
-
     if(enable_as_hex)
     {
         CROW_ROUTE(app, "/txhex/<string>")
         ([&](string tx_hash) {
-            return myxmr::htmlresponse(arqblocks.show_tx_hex(remove_bad_chars(tx_hash)));
+            return crow::response(arqblocks.show_tx_hex(remove_bad_chars(tx_hash)));
         });
 
         CROW_ROUTE(app, "/ringmembershex/<string>")
         ([&](string tx_hash) {
-            return myxmr::htmlresponse(arqblocks.show_ringmembers_hex(remove_bad_chars(tx_hash)));
+            return crow::response(arqblocks.show_ringmembers_hex(remove_bad_chars(tx_hash)));
         });
 
         CROW_ROUTE(app, "/blockhex/<uint>")
         ([&](size_t block_height) {
-            return myxmr::htmlresponse(arqblocks.show_block_hex(block_height, false));
+            return crow::response(arqblocks.show_block_hex(block_height, false));
         });
 
         CROW_ROUTE(app, "/blockhexcomplete/<uint>")
         ([&](size_t block_height) {
-            return myxmr::htmlresponse(arqblocks.show_block_hex(block_height, true));
+            return crow::response(arqblocks.show_block_hex(block_height, true));
         });
 
         CROW_ROUTE(app, "/ringmemberstxhex/<string>")
@@ -343,6 +335,41 @@ main(int ac, const char* av[])
     CROW_ROUTE(app, "/tx/<string>/<uint>")
     ([&](string tx_hash, uint16_t with_ring_signatures) {
         return myxmr::htmlresponse(arqblocks.show_tx(remove_bad_chars(tx_hash), with_ring_signatures));
+    });
+
+    CROW_ROUTE(app, "/service_node/<string>")
+    ([&](string service_node_pubkey) {
+      return myxmr::htmlresponse(arqblocks.show_service_node(remove_bad_chars(service_node_pubkey)));
+    });
+
+    CROW_ROUTE(app, "/service_nodes")
+    ([&]() {
+      return myxmr::htmlresponse(arqblocks.render_service_nodes_html(true));
+    });
+
+    CROW_ROUTE(app, "/quorums")
+    ([&]() {
+      return myxmr::htmlresponse(arqblocks.render_quorum_states_html(true));
+    });
+
+    CROW_ROUTE(app, "/checkpoint_quorum/<uint>")
+    ([&](uint64_t height) {
+      return myxmr::htmlresponse(arqblocks.render_single_quorum_html(service_nodes::quorum_type::checkpointing, height));
+    });
+
+    CROW_ROUTE(app, "/obligations_quorum/<uint>")
+    ([&](uint64_t height) {
+      return myxmr::htmlresponse(arqblocks.render_single_quorum_html(service_nodes::quorum_type::obligations, height));
+    });
+
+    CROW_ROUTE(app, "/checkpoints")
+    ([&]() {
+      return myxmr::htmlresponse(arqblocks.render_checkpoints_html(true));
+    });
+
+    CROW_ROUTE(app, "/search_service_node").methods("GET"_method)
+    ([&](const crow::request& req) {
+      return myxmr::htmlresponse(arqblocks.show_service_node(remove_bad_chars(string(req.url_params.get("value")))));
     });
 
     CROW_ROUTE(app, "/myoutputs").methods("POST"_method)
@@ -405,9 +432,7 @@ main(int ac, const char* av[])
 
             string domain      = get_domain(req);
 
-            string response = arqblocks.show_prove(tx_hash, arq_address, tx_prv_key, raw_tx_data, domain);
-
-            return myxmr::htmlresponse(std::move(response));
+            return myxmr::htmlresponse(arqblocks.show_prove(tx_hash, arq_address, tx_prv_key, raw_tx_data, domain));
     });
 
 
@@ -534,10 +559,6 @@ main(int ac, const char* av[])
     if(enable_json_api)
     {
         cout << "Enable JSON API\n";
-	CROW_ROUTE(app, "/api")
-        ([&]() {
-            return myxmr::htmlresponse(arqblocks.api());
-        });
 
         CROW_ROUTE(app, "/api/transaction/<string>")
         ([&](string tx_hash) {

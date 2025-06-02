@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.10)
+cmake_minimum_required(VERSION 3.25)
 message(STATUS "CMake version: ${CMAKE_VERSION}")
 
 list(INSERT CMAKE_MODULE_PATH 0 "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
@@ -11,21 +11,26 @@ include(CheckFunctionExists)
 set(PROJECT_NAME
         arqblocks)
 
+if(POLICY CMP0167)
+  cmake_policy(SET CMP0167 NEW)
+endif()
+
 project(${PROJECT_NAME}
 	LANGUAGES CXX C)
 
-set(CMAKE_CXX_STANDARD 14)
+set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
 
 if(WIN32)
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wa,-mbig-obj -O3")
+  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wa,-mbig-obj -O3")
 endif()
 
 # changed to comply with stagenet requirements
 # will need to be changed on release later on
 # along with other paths which had been changed as well
 set(ARQMA_DIR ~/devnet/arqma)
+set(ARQMA_BRANCH master)
 
 message(STATUS ARQMA_DIR ": ${ARQMA_DIR}")
 
@@ -33,7 +38,7 @@ set(ARQMA_SOURCE_DIR ${ARQMA_DIR}
         CACHE PATH "Path to the root directory for Arqma")
 
 # set location of arqma build tree
-set(ARQMA_BUILD_DIR ${ARQMA_SOURCE_DIR}/build/Linux/dev/release
+set(ARQMA_BUILD_DIR ${ARQMA_SOURCE_DIR}/build/Linux/${ARQMA_BRANCH}/release
         CACHE PATH "Path to the build directory for Arqma")
 
 set(MY_CMAKE_DIR "${CMAKE_CURRENT_LIST_DIR}/cmake"
@@ -57,9 +62,9 @@ find_package(Boost 1.62.0 QUIET REQUIRED COMPONENTS system filesystem thread dat
 find_package(Sanitizers)
 
 if(APPLE)
-  include_directories(/usr/local/opt/openssl@1.1/include)
-  link_directories(/usr/local/opt/openssl@1.1/lib)
-  link_directories(/usr/local/lib)
+  include_directories(/opt/homebrew/opt/openssl/include)
+  link_directories(/opt/homebrew/opt/openssl/lib)
+  link_directories(/opt/homebrew/lib)
 endif()
 
 
@@ -72,7 +77,7 @@ endif()
 include_directories(SYSTEM ${Boost_INCLUDE_DIRS})
 
 # include arqma
-include_directories(${ARQMA_SOURCE_DIR}/build/Linux/dev)
+include_directories(${ARQMA_SOURCE_DIR}/build/Linux/${ARQMA_BRANCH})
 
 include_directories("ext/mstch/include")
 include_directories("ext/mstch/include/mstch")
@@ -106,11 +111,11 @@ set(LIBRARIES
         myext
         mstch
         wallet
-        arqma_mq
-        blockchain_db
         cryptonote_core
-        cryptonote_protocol
         cryptonote_basic
+        cryptonote_protocol
+        cryptonote_format_utils_basic
+        blockchain_db
         blocks
         net
         multisig
@@ -124,10 +129,11 @@ set(LIBRARIES
         mnemonics
         easylogging
         checkpoints
+        miniupnpc
         version
         epee
-        randomx
         sodium
+        randomx
         libzmq
         ${Boost_LIBRARIES}
         libunbound

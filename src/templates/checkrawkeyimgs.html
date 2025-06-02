@@ -1,79 +1,51 @@
-<div>
+<div class="Wrapper">
 
-  <div class="table-header">
-    Signed Key Images Checker
-  </div>
-
-  <div class="table-scroller">
-    <div class="monospace pure-g">
-
-      <div class="pure-u-1-4 pure-u-md-1-5">
-        <span>Data file prefix</span>
-      </div>
-      <div class="pure-u-3-4 pure-u-md-4-5 line-break">
-        <span>{{data_prefix}}</span>
-      </div>
-
-      {{#has_error}}
-      <div class="pure-u-1" style="color:red">
-        Attempt failed
-      </div>
-      <div class="pure-u-1">
-        {{error_msg}}
-      </div>
-      {{/has_error}}
-      
-      {{^has_error}}
-      <div class="pure-u-1-4 pure-u-md-1-5">
-        <span>Key images for address</span>
-      </div>
-      <div class="pure-u-3-4 pure-u-md-4-5 line-break">
-        <span>{{address}}</span>
-      </div>
-
-      <div class="pure-u-1-4 pure-u-md-1-5">
-        <span>Viewkey</span>
-      </div>
-      <div class="pure-u-3-4 pure-u-md-4-5 line-break">
-        <span>{{viewkey}}</span>
-      </div>
-      {{/has_error}}
-
+    <div>
+        <br/>
+        <h3 class="center">Signed Key Images Checker</h3>
     </div>
 
-    {{^has_error}}
-    <div class="table-container">
-      <table class="pure-table pure-table-striped">
-        <thead>
-          <tr>
-            <th style="width: 0px;"></th>
-            <th style="width: 80px;">Key no.</th>
-            <th>Key image</th>
-            <th style="width: 70px;">Is spent?</th>
-          </tr>
-        </thead>
-        <tbody>
-        {{#key_imgs}}
-        <tr>
-          <td>
-            <input type="hidden" id="key_img_{{key_image}}" name="key_sig_pair_{{key_image}}" value="{{signature}}">
-          </td>
-          <td>{{key_no}}</td>
-          <td>{{key_image}}</td>
-          <td>
-            {{#is_spent}}
-            <span style="color: #008009;font-weight: bold">{{is_spent}}</span>
-            {{/is_spent}}
-            {{^is_spent}}
-            {{is_spent}}
-            {{/is_spent}}
-          </td>
-        </tr>
-        {{/key_imgs}}
-        </tbody>
-      </table>
-    </div>
+
+    <h3>Data file prefix: {{data_prefix}}</h3>
+
+    {{#has_error}}
+        <h4 style="color:red">Attempt failed</h4>
+        <h4>{{error_msg}}</h4>
     {{/has_error}}
-    
-  </div>
+    {{^has_error}}
+        <h4>Key images for address: {{address}}</h4>
+        <h4>Viewkey: {{viewkey}}</h4>
+
+        <div class="center">
+
+            <form action="/genrawkeyimgs" method="post" style="width:100%; margin-top:15px" class="style-1">
+                <table class="Table">
+                    <tr class="TableHeader">
+                        <td>Key No.</td>
+                        <td>Key Image</td>
+                        <td>Is Spent?</td>
+                    </tr>
+                    {{#key_imgs}}
+                    <input type="hidden" id="key_img_{{key_image}}" name="key_sig_pair_{{key_image}}" value="{{signature}}">
+                        <tr>
+                            <td>{{key_no}}</td>
+                            <td>{{key_image}}</td>
+                            <td>
+                                {{#is_spent}}
+                                    <span style="color: #008009;font-weight: bold">{{is_spent}}</span>
+                                {{/is_spent}}
+                                {{^is_spent}}
+                                    {{is_spent}}
+                                {{/is_spent}}
+                            </td>
+                        </tr>
+                    {{/key_imgs}}
+                </table>
+                <br/>
+            </form>
+
+        </div>
+
+    {{/has_error}}
+
 </div>
