@@ -1,90 +1,25 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta name="keywords" content="arqma, coin, currency, altcoin, mining, bitcoin">
-    <meta name="description" content="Arqma Network Blockchain Explorer">
-    <meta name="author" content="Ryo-Currency, Monero, Arqma Developers">
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, user-scalable=yes">
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="format-detection" content="telephone=yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="black">
-    <meta name="apple-mobile-web-app-title" content="Arqma Network">
-    <meta name="application-name" content="Arqma Network">
-    <meta name="msapplication-TileColor" content="#2b5797">
-    <meta name="theme-color" content="#ffffff">
-    {{#refresh}}<meta http-equiv="refresh" content="10">{{/refresh}}
-    <link href="data:image/x-icon;base64,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
-swlmywJGygkhVZqGXzY190UvMI4M7bMVThmx+bgaJ7SaLZk/FXiQidjRsjFSwSSlVKVuWMhJtf4u
-7YiJCOEBCFQjJmSNqfNnDyf611UVroPqya/9ZO4TXk5n33caFFX8Cjyntcy0Cn6jm5HJCBuRZFeH
-5mW7lmuaWmCRlk1MhvnEW14+0bQnDvCfmPPgBdC0fx3qe9a0IQXFVdVZp3NXe/PO14kWSU2d+Y+f
-mw7+DRiI2Q4OzkjnAAAAJXRFWHRkYXRlOmNyZWF0ZQAyMDE5LTAyLTA1VDE2OjMxOjIxKzAwOjAw
-dWf5tQAAACV0RVh0ZGF0ZTptb2RpZnkAMjAxOS0wMi0wNVQxNjozMToyMSswMDowMAQ6QQkAAABG
-dEVYdHNvZnR3YXJlAEltYWdlTWFnaWNrIDYuNy44LTkgMjAxNC0wNS0xMiBRMTYgaHR0cDovL3d3
-dy5pbWFnZW1hZ2ljay5vcmfchu0AAAAAGHRFWHRUaHVtYjo6RG9jdW1lbnQ6OlBhZ2VzADGn/7sv
-AAAAGHRFWHRUaHVtYjo6SW1hZ2U6OmhlaWdodAAxOTIPAHKFAAAAF3RFWHRUaHVtYjo6SW1hZ2U6
-OldpZHRoADE5MtOsIQgAAAAZdEVYdFRodW1iOjpNaW1ldHlwZQBpbWFnZS9wbmc/slZOAAAAF3RF
-WHRUaHVtYjo6TVRpbWUAMTU0OTM4NDI4Ma+MyEcAAAAPdEVYdFRodW1iOjpTaXplADBCQpSiPuwA
-AABWdEVYdFRodW1iOjpVUkkAZmlsZTovLy9tbnRsb2cvZmF2aWNvbnMvMjAxOS0wMi0wNS9jN2Zk
-YzZlMDBhODM2NjM1YzE3M2M0YTNlMjEzNWZiYS5pY28ucG5nUGkbewAAAABJRU5ErkJggg==" rel="icon" type="image/x-icon" />
-    <link rel="manifest" href="/site.manifest">
-    <title>ARQMA Blockchain Explorer</title>
-    <style type="text/css">{{#css_styles}}{{/css_styles}}</style>
+  <meta name="keywords" content="arqma, coin, currency, altcoin, mining, bitcoin, anonymity">
+  <meta name="description" content="Arq-Net Arqma Network Blockchain Explorer">
+  <meta name="author" content="Arqma Developers, Monero Developers">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <!-- <meta name="format-detection" content="telephone=yes"> -->
+  <meta http-equiv="Cache-Control" content="no-cache">
+  <meta name="theme-color" content="#ffffff">
+  {{#refresh}}<meta http-equiv="refresh" content="10">{{/refresh}}
+  <title>Arqma Blockchain Explorer</title>
+  <link rel="icon" type="image/x-icon" href="/favicon.ico">
+  <link rel="manifest" href="/site.manifest">
+  <style type="text/css">{{#css_styles}}{{/css_styles}}</style>
 </head>
-<body>
-  <div class="container">
-    <header>
-
-      <div class="logo">
-	<a href="/">
-    <svg version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" width="185px" height="60px" viewBox="0 0 185 60" enable-background="new 0 0 185 60" xml:space="preserve">  <image id="image0" width="185" height="60" x="0" y="0"
+<div>
+  <header class="Wrapper" align="center">
+    <div class="logo">
+      <a href="/">
+      <svg version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" width="185px" height="60px" viewBox="0 0 185 60" enable-background="new 0 0 185 60" xml:space="preserve">  <image id="image0" width="185" height="60" x="0" y="0"
     xlink:href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAALkAAAA8CAYAAAA60Bs3AAAABGdBTUEAALGOfPtRkwAAACBjSFJN
 AAB6JQAAgIMAAPn/AACA6QAAdTAAAOpgAAA6mAAAF2+SX8VGAAAABmJLR0QA/wD/AP+gvaeTAAAA
 CXBIWXMAABcSAAAXEgFnn9JSAAAAB3RJTUUH4wkFEQcG3QyregAAK5ZJREFUeNrtXXd8VUX2/976
@@ -285,27 +220,25 @@ lNu/x8dvXp1jc+RM4yXvtbpOHIbmV1PSuqRpMd/sWKj84caAMkOSHcdzNLY7qsopTofU5HaYzzvk
 USEejzR5nPQth6y+LJi7fjQ5N7n65sN292H8d/CLCnkCLzx6LuKR3XJK5oALJSXzwYJuw3q3BGOg
 JA5/w5ZNRPff65YbPtOJy7jqd5Rnchi/Tvw/4OX8EnbNH9sAAAAldEVYdGRhdGU6Y3JlYXRlADIw
 MTktMDktMDZUMDA6MDg6MTMrMDM6MDCl4BwvAAAAJXRFWHRkYXRlOm1vZGlmeQAyMDE5LTA5LTA2
-VDAwOjA4OjEzKzAzOjAw1L2kkwAAAABJRU5ErkJggg==" />
-</svg>
-
+VDAwOjA4OjEzKzAzOjAw1L2kkwAAAABJRU5ErkJggg==" /></svg>
+    </div>
+  </header>
+</div>
+<body>
+  <div class="Wrapper">
+    <div></div><div></div>
+      <div class="Wrapper">
+        <h1 class="Header" style="text-align: center"><a href="/"><strong><b>Arqma Blockchain Explorer</b></strong></a></h1>
+        <h4 class="Subtitle" style="margin-bottom: 0px; text-aling: center">(No Javascript | No Cookies | No Web Analytics Trackers | No Images | Open Sourced)</h4>
       </div>
+      <form action="/search" align="center" method="get" style="width: 100%; margin-top:15px;" class="style-1">
+        <input type="text" name="value" size="120" align="center" style="stroke-color: gray;" placeholder="Block Height, Block Hash, Transaction Hash">
+        <input type="submit" class="PageButton" value="Search">
+      </form>
+      <form action="/search_service_node" align="center" method="get" style="width: 100%; margin-top:15px; margin-bottom: 1em;" class="style-1">
+        <input type="text" name="value" size="120" align="center" style="stroke-color: gray;" placeholder="Service Node Public Key">
+        <input type="submit" class="PageButton" value="Search">
+      </form>
+    <div class="TitleDivider" style="margin-bottom: 1em"></div>
+  </div>
 
-      <div class="pure-menu pure-menu-horizontal pure-menu-scrollable">
-	<ul class="pure-menu-list">
-	  <li class="pure-menu-item"><a href="/" class="pure-menu-link">Main page</a></li>
-	  <li class="pure-menu-item"><a href="/txpool" class="pure-menu-link">Transaction pool</a></li>
-          {{#enable_pusher}}<li class="pure-menu-item"><a href="/rawtx" class="pure-menu-link">Transaction pusher</a></li>{{/enable_pusher}}
-	  {{#enable_key_image_checker}}<li class="pure-menu-item"><a href="/rawkeyimgs" class="pure-menu-link">Key images checker</a></li>{{/enable_key_image_checker}}
-	  {{#enable_output_key_checker}}<li class="pure-menu-item"><a href="/rawoutputkeys" class="pure-menu-link">Output keys checker</a></li>{{/enable_output_key_checker}}
-	  <li class="pure-menu-item"><a href="/api" class="pure-menu-link">API</a></li>
-	</ul>
-      </div>
-
-      <div class="search">
-        <form action="/search" method="get" class="pure-form">
-            <input type="text" name="value" placeholder="block height, block hash, transaction hash, public address">
-            <input type="submit" value="Search" class="pure-button pure-button-active">
-        </form>
-      </div>
-
-    </header>

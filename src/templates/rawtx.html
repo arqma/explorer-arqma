@@ -1,96 +1,33 @@
 <div>
 
-  <div class="table-header">
-    Transaction Pusher
-  </div>
-
-  <div class="table-scroller padding">
-    <form action="/checkandpush" method="post" class="pure-form">
-
-      <p>
-        <textarea placeholder="Hex string of raw transaction, or signed / unsigned tx set" name="rawtxdata"></textarea>
-      </p>
-      
-      <p>
-        <input type="text" placeholder="Private viewkey (only needed for signed / unsigned tx set)" name="viewkey" class="pure-input-1" />
-      </p>
-      
-      <div class="buttons-container">
-	<input type="submit" name="action" value="check" class="pure-button pure-button-active" />
-	<input type="submit" name="action" value="push" class="pure-button pure-button-active" />
-      </div>
-      
-    </form>
-  </div>
+    <div class="center">
+        <br/>
+        <h3 class="center">Transaction Pusher</h3>
+    </div>
 
 
-  <div class="table-header">
-    Instructions
-  </div>
+    <div class="center">
+        <form action="/checkandpush" method="post" style="width:100%; margin-top:15px" class="style-1">
+            Paste here either a hex string of raw transaction<br/>
+            (the <i>tx_blob</i> response in the wallet RPC, or the <i>raw_arqma_tx</i>
+            file saved by the wallet CLI with <i>--do-not-relay</i> option specified),<br/>
+            or base64 encoded, unsigned or signed transaction data<br/>
+            <br/>
+            (In Linux, can get the raw tx data: <i>cat raw_arqma_tx | xclip -selection clipboard</i>)<br/>
+            (In Windows, can get the raw tx data: <i>certutil.exe -encode -f raw_arqma_tx encoded.txt & type "encoded.txt" | clip</i>)<br/>
 
-  <div class="table-scroller padding">
-    <h4>Obtaining hex string of raw transaction from CLI wallet</h4>
-    <ul>
-      <li>
-        From <code>arqma-wallet-cli --do-not-relay</code> create a transaction which will be written to a file
-      </li>
-      <li>
-        On Linux terminal, type <code>cat raw_arq_tx | xclip -selection clipboard</code>
-      </li>
-      <li>
-        On Windows command line, type <code>certutil.exe -encode -f raw_arq_tx encoded.txt & type "encoded.txt" | clip</code>
-      </li>
-    </ul>
+            <textarea name="rawtxdata" rows="20" cols="80"></textarea>
+            <br/>
+            Note: data is sent to the server, as the calculations are done on the server side
+            <br/>
+            Note: "check" does not work for the hex string of raw transaction
+            <br/>
+            <input type="submit" name="action" value="check">
+            &nbsp;  &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;  &nbsp; &nbsp; &nbsp; &nbsp;
+            &nbsp;  &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;  &nbsp; &nbsp; &nbsp; &nbsp;
+            <input type="submit" name="action" value="push">
+        </form>
+    </div>
 
-    <h4>Obtaining hex string of raw transaction from RPC wallet</h4>
-    <ul>
-      <li>
-        Run <code>arqma-wallet-rpc</code> and create a transaction with the <code>do_not_relay</code> and <code>get_tx_hex</code> parameters set to <code>true</code>
-      </li>
-      <li>
-        Paste the output of <code>tx_blob</code> into the form above
-      </li>
-    </ul>
-
-    <h4>Obtaining unsigned tx set</h4>
-    <ul>
-      <li>
-        Run <code>arqma-wallet-cli</code> with a view-only wallet opened and create a transaction
-      </li>
-      <li>
-        On Linux terminal, type <code>base64 unsigned_arqma_tx | xclip -selection clipboard</code>
-      </li>
-      <li>
-        On Windows command line, type <code>certutil.exe -encode -f unsigned_arqma_tx encoded.txt & type "encoded.txt" | clip</code>
-      </li>
-    </ul>
-
-    <h4>Obtaining signed tx set</h4>
-    <ul>
-      <li>
-        Run <code>arqma-wallet-cli</code> with the corresponding hot wallet and run <code>sign_transfer</code>
-      </li>
-      <li>
-        On Linux terminal, type <code>base64 signed_arqma_tx | xclip -selection clipboard</code>
-      </li>
-      <li>
-        On Windows command line, type <code>certutil.exe -encode -f signed_arqma_tx encoded.txt & type "encoded.txt" | clip</code>
-      </li>
-    </ul>
-    
-    <h4>Notes</h4>
-    <ul>
-      <li>
-        Viewkey is only needed for checking a signed / unsigned tx set or pushing a signed tx set made from a view-only wallet or corresponding hot wallet
-      </li>
-      <li>
-        Data is sent to the server, as the calculations are done on the server side
-      </li>
-      <li>
-        If submitting a signed / unsigned tx set, then the private tx key, recipients, and payment id will also be sent to the server
-      </li>
-    </ul>
-
-  </div>
-
+    <br/>
 </div>

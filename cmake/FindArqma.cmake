@@ -30,7 +30,8 @@
 
 set(LIBS common;blocks;cryptonote_basic;cryptonote_core;multisig;net;cryptonote_protocol;
          daemonizer;mnemonics;epee;lmdb;device;blockchain_db;ringct;wallet;cncrypto;
-         easylogging;version;checkpoints;randomx;arqma_mq)
+         easylogging;version;checkpoints;randomx;miniupnpc)
+
 
 set(Arqma_INCLUDE_DIRS "${CPP_ARQMA_DIR}")
 
@@ -42,7 +43,7 @@ foreach(l ${LIBS})
   find_library(Arqma_${L}_LIBRARY
     NAMES ${l}
     PATHS ${CMAKE_LIBRARY_PATH}
-    PATH_SUFFIXES "/src/${l}" "/src/" "/external/lib${l}" "/lib" "/external/randomarq/" "/src/crypto" "/contrib/epee/src" "/external/easylogging++/" "/external/${l}" "/src/lmdb/liblmdb"
+    PATH_SUFFI
     NO_DEFAULT_PATH)
 
   set(Arqma_${L}_LIBRARIES ${Arqma_${L}_LIBRARY})
@@ -57,7 +58,13 @@ if(EXISTS ${ARQMA_BUILD_DIR}/src/ringct/libringct_basic.a)
   set_property(TARGET ringct_basic PROPERTY IMPORTED_LOCATION ${ARQMA_BUILD_DIR}/src/ringct/libringct_basic.a)
 endif()
 
-if(EXISTS ${ARQMA_BUILD_DIR}/external/libzmq/lib/libzmq.a)
+if(EXISTS ${ARQMA_BUILD_DIR}/src/cryptonote_basic/libcryptonote_format_utils_basic.a)
+  message(STATUS FindArqma " found libcryptonote_format_utils_basic.a")
+  add_library(cryptonote_format_utils_basic STATIC IMPORTED)
+  set_property(TARGET cryptonote_format_utils_basic PROPERTY IMPORTED_LOCATION ${ARQMA_BUILD_DIR}/src/cryptonote_basic/libcryptonote_format_utils_basic.a)
+endif()
+
+if(EXISTS ${ARQMA_BUILD_DIR}/external/
   message(STATUS FindArqma " found in-tree libzmq.a")
   add_library(libzmq STATIC IMPORTED)
   set_property(TARGET libzmq PROPERTY IMPORTED_LOCATION ${ARQMA_BUILD_DIR}/external/libzmq/lib/libzmq.a)
@@ -78,7 +85,7 @@ include_directories(
   ${ARQMA_SOURCE_DIR}/external
   ${ARQMA_SOURCE_DIR}/external/randomarq/src
   ${ARQMA_SOURCE_DIR}/build/Linux/${ARQMA_BRANCH}/release
-  ${ARQMA_SOURCE_DIR}/build/Linux/${ARQMA_BRANCH}/release/external/libzmq/include
+  ${ARQMA_SOUR
   ${ARQMA_SOURCE_DIR}/external/unbound/libunbound
   ${ARQMA_SOURCE_DIR}/external/easylogging++
   ${ARQMA_SOURCE_DIR}/contrib/epee/include

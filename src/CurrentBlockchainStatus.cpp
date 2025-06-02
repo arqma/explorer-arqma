@@ -17,7 +17,6 @@ CurrentBlockchainStatus::set_blockchain_variables(MicroCore* _mcore,
     core_storage =_core_storage;
 }
 
-
 void
 CurrentBlockchainStatus::start_monitor_blockchain_thread()
 {

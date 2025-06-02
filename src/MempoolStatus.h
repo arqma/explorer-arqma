@@ -51,6 +51,12 @@ struct MempoolStatus
                       // 'e' - encrypted, short, from integrated addresses
     };
 
+    struct service_node_state
+    {
+      int num_registered;
+    };
+
+    static service_node_state node_state;
 
     // to keep network_info in cache
     // and to show previous info in case current querry for
@@ -83,6 +89,7 @@ struct MempoolStatus
         uint64_t hash_rate  {0};
         uint64_t fee_per_kb  {0};
         uint64_t info_timestamp  {0};
+        uint64_t staking_requirement {0};
 
         bool current {false};
 

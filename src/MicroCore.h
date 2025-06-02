@@ -28,18 +28,20 @@ namespace xmreg
 
         string blockchain_path;
 
-        tx_memory_pool m_mempool;
         Blockchain m_blockchain_storage;
+        tx_memory_pool m_mempool;
 
         hw::device* m_device;
 
         network_type nettype;
 
     public:
+        service_nodes::service_node_list m_service_node_list;
+
         MicroCore();
 
         bool
-        init(const string &_blockchain_path, network_type nt);
+        init(const string &blockchain_path_, network_type nt);
 
         Blockchain&
         get_core();

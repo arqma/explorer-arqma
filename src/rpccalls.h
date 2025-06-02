@@ -99,6 +99,9 @@ public:
     get_network_info(COMMAND_RPC_GET_INFO::response &info);
 
     bool
+    get_staking_requirement(uint64_t height, COMMAND_RPC_GET_STAKING_REQUIREMENT::response& response);
+
+    bool
     get_hardfork_info(COMMAND_RPC_HARD_FORK_INFO::response &res);
 
     bool
@@ -185,11 +188,17 @@ public:
     bool
     get_block(string const &blk_hash, block &blk, string &error_msg);
 
+    bool
+    get_service_node(COMMAND_RPC_GET_SERVICE_NODES::response &res, const std::vector<std::string> &pubkeys);
+
+    bool
+    get_quorum_state(COMMAND_RPC_GET_QUORUM_STATE::response &res, uint64_t start_height = std::numeric_limits<uint64_t>::max(), uint64_t end_height = std::numeric_limits<uint64_t>::max(), uint8_t quorum_type = 255);
+
+    bool
+    get_checkpoints(COMMAND_RPC_GET_CHECKPOINTS::response &res, uint32_t count = COMMAND_RPC_GET_CHECKPOINTS::NUM_CHECKPOINTS_TO_QUERY_BY_DEFAULT, uint64_t start_height = COMMAND_RPC_GET_CHECKPOINTS::HEIGHT_SENTINEL_VALUE, uint64_t end_height = COMMAND_RPC_GET_CHECKPOINTS::HEIGHT_SENTINEL_VALUE);
+
 };
 
-
 }
-
-
 
 #endif //CROWXMR_RPCCALLS_H

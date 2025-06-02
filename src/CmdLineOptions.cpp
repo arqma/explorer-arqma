@@ -28,8 +28,6 @@ namespace xmreg
                  "use stagenet blockchain")
                 ("enable-pusher", value<bool>()->default_value(true)->implicit_value(true),
                  "enable signed transaction pusher")
-                ("enable-random-arq", value<bool>()->default_value(true)->implicit_value(true),
-                 "enable generation of random_arq source code for blocks")
                 ("enable-mixin-details", value<bool>()->default_value(false)->implicit_value(true),
                  "enable mixin details for key images, e.g., timescale, mixin of mixins, in tx context")
                 ("enable-key-image-checker", value<bool>()->default_value(true)->implicit_value(true),
@@ -69,7 +67,9 @@ namespace xmreg
                 ("ssl-key-file", value<string>(),
                  "path to key file for ssl (https) functionality")
                 ("daemon-url,d", value<string>()->default_value("http://127.0.0.1:19994"),
-                 "Arqma Network daemon url");
+                 "Arqma Network daemon url")
+                ("enable-mixin-guess", value<bool>()->default_value(false)->implicit_value(true),
+                 "enable guessing real outputs in key images based on viewkey");
 
 
         store(command_line_parser(acc, avv)
