@@ -29,7 +29,7 @@ endif()
 # changed to comply with stagenet requirements
 # will need to be changed on release later on
 # along with other paths which had been changed as well
-set(ARQMA_DIR ~/devnet/arqma)
+set(ARQMA_DIR ~/arqma)
 set(ARQMA_BRANCH master)
 
 message(STATUS ARQMA_DIR ": ${ARQMA_DIR}")
