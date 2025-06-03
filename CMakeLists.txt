@@ -30,7 +30,7 @@ endif()
 # will need to be changed on release later on
 # along with other paths which had been changed as well
 set(ARQMA_DIR ~/arqma)
-set(ARQMA_BRANCH master)
+set(ARQMA_BRANCH release-v7.0.0)
 
 message(STATUS ARQMA_DIR ": ${ARQMA_DIR}")
 
