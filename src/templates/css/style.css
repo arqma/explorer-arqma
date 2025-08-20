@@ -2,7 +2,7 @@ body {
     margin: 0;
     padding: 0;
     font-size: 80%;
-    background-color: #707070;;
+    background-color: #707070;
 /*    background-image: linear-gradient(104deg, rgba(89, 131, 252, 1) 0%, rgba(41, 53, 86, 1) 100%); */
     font-family: sans-serif;
     color: black;
@@ -235,8 +235,8 @@ th.subheader {
   border-bottom: 2px solid #7070707;
 }
 
-td span.checkpoint-signed { color: #707070; }
-td span.checkpoint-not-signed { color: black; }
+td span.checkpoint-signed { color: #008522; }
+td span.checkpoint-not-signed { color: #c50022; }
 
 .omg {
     font-weight: bold;
@@ -252,13 +252,6 @@ h3 .sn-count {
   font-weight: bold;
 }
 
-.container {
-  box-sizing: border-box;
-  width: 100%;
-  position: relative;
-  padding-top: 15px;
-  padding-right: 15px;
-  padding-left: 15px;
-  margin-right: auto;
-  margin-left: auto;
+.TXType {
+  font-family: initial;
 }

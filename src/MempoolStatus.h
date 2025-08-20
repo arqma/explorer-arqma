@@ -7,6 +7,7 @@
 
 
 #include "MicroCore.h"
+#include "rpccalls.h"
 
 #include <boost/algorithm/string.hpp>
 
@@ -45,10 +46,6 @@ struct MempoolStatus
         string arq_outputs_str;
         string timestamp_str;
         string txsize;
-
-        char     pID; // '-' - no payment ID,
-                      // 'l' - legacy, long 64 character payment id,
-                      // 'e' - encrypted, short, from integrated addresses
     };
 
     struct service_node_state

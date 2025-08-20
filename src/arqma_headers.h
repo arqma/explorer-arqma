@@ -24,6 +24,7 @@
 #include "cryptonote_core/blockchain.h"
 #include "cryptonote_core/service_node_list.h"
 #include "cryptonote_core/service_node_quorum_cop.h"
+#include "checkpoints/checkpoints.h"
 #include "blockchain_db/lmdb/db_lmdb.h"
 #include "device/device_default.hpp"
 

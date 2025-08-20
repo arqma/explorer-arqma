@@ -26,15 +26,15 @@ namespace xmreg
                  "use testnet blockchain")
                 ("stagenet,s", value<bool>()->default_value(false)->implicit_value(true),
                  "use stagenet blockchain")
-                ("enable-pusher", value<bool>()->default_value(true)->implicit_value(true),
+                ("enable-pusher", value<bool>()->default_value(false)->implicit_value(true),
                  "enable signed transaction pusher")
                 ("enable-mixin-details", value<bool>()->default_value(false)->implicit_value(true),
                  "enable mixin details for key images, e.g., timescale, mixin of mixins, in tx context")
-                ("enable-key-image-checker", value<bool>()->default_value(true)->implicit_value(true),
+                ("enable-key-image-checker", value<bool>()->default_value(false)->implicit_value(true),
                  "enable key images file checker")
-                ("enable-output-key-checker", value<bool>()->default_value(true)->implicit_value(true),
+                ("enable-output-key-checker", value<bool>()->default_value(false)->implicit_value(true),
                  "enable outputs key file checker")
-                ("enable-json-api", value<bool>()->default_value(true)->implicit_value(true),
+                ("enable-json-api", value<bool>()->default_value(true)->implicit_value(false),
                  "enable JSON REST api")
                 ("enable-as-hex", value<bool>()->default_value(false)->implicit_value(true),
                  "enable links to provide hex represtations of a tx and a block")
@@ -52,16 +52,16 @@ namespace xmreg
                  "you can specify stagenet url, if you run it on mainnet or testnet. link will show on front page to stagenet explorer")
                 ("mainnet-url", value<string>()->default_value("https://explorer.arqma.com"),
                  "you can specify mainnet url, if you run it on testnet or stagenet. link will show on front page to mainnet explorer")
-                ("no-blocks-on-index", value<string>()->default_value("49"),
+                ("no-blocks-on-index", value<string>()->default_value("19"),
                  "number of last blocks to be shown on index page")
                 ("mempool-info-timeout", value<string>()->default_value("5000"),
                  "maximum time, in milliseconds, to wait for mempool data for the front page")
                 ("mempool-refresh-time", value<string>()->default_value("5"),
                  "time, in seconds, for each refresh of mempool state")
-                ("concurrency,c", value<size_t>()->default_value(0),
+                ("concurrency,c", value<size_t>()->default_value(2),
                  "number of threads handling http queries. Default is 0 which means it is based you on the cpu")
-                ("bc-path,b", value<string>(),
-                 "path to lmdb folder of the blockchain, e.g., ~/.arqma/lmdb")
+                ("bc-path,b", value<string>()->default_value("/home/arqma/.arqma/lmdb"),
+                 "path to lmdb folder of the blockchain, e.g., /home/arqma/.arqma/lmdb")
                 ("ssl-crt-file", value<string>(),
                  "path to crt file for ssl (https) functionality")
                 ("ssl-key-file", value<string>(),
@@ -69,7 +69,9 @@ namespace xmreg
                 ("daemon-url,d", value<string>()->default_value("http://127.0.0.1:19994"),
                  "Arqma Network daemon url")
                 ("enable-mixin-guess", value<bool>()->default_value(false)->implicit_value(true),
-                 "enable guessing real outputs in key images based on viewkey");
+                 "enable guessing real outputs in key images based on viewkey")
+                ("log-level", value<string>(),
+                 "set log level");
 
 
         store(command_line_parser(acc, avv)

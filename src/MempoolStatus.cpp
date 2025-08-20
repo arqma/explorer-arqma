@@ -4,8 +4,6 @@
 
 #include "MempoolStatus.h"
 
-#include "rpccalls.h"
-
 namespace xmreg
 {
 
@@ -196,26 +194,6 @@ MempoolStatus::read_mempool()
 
         last_tx.txsize                = fmt::format("{:0.2f}", tx_size);
 
-        last_tx.pID                   = '-';
-
-        crypto::hash payment_id;
-        crypto::hash8 payment_id8;
-
-        get_payment_id(tx, payment_id, payment_id8);
-
-        if (payment_id != null_hash)
-            last_tx.pID = 'l'; // legacy payment id
-        else if (payment_id8 != null_hash8)
-            last_tx.pID = 'e'; // encrypted payment id
-        else if (!get_additional_tx_pub_keys_from_extra(tx).empty())
-        {
-            // if multioutput tx have additional public keys,
-            // mark it so that it represents that it has at least
-            // one sub-address
-            last_tx.pID = 's';
-        }
-       // } // if (hex_to_pod(_tx_info.id_hash, mem_tx_hash))
-
     } // for (size_t i = 0; i < mempool_tx_info.size(); ++i)
 
 
@@ -243,7 +221,10 @@ MempoolStatus::read_network_info()
     COMMAND_RPC_GET_INFO::response rpc_network_info;
 
     if (!rpc.get_network_info(rpc_network_info))
+    {
+        cerr << "rpc.get_network_info(rpc_network_info) failed";
         return false;
+    }
 
     uint64_t fee_estimated;
 
@@ -351,7 +332,7 @@ vector<MempoolStatus::mempool_tx> MempoolStatus::mempool_txs;
 atomic<MempoolStatus::network_info> MempoolStatus::current_network_info;
 atomic<uint64_t> MempoolStatus::mempool_no {0};   // no of txs
 atomic<uint64_t> MempoolStatus::mempool_size {0}; // size in bytes.
-uint64_t MempoolStatus::mempool_refresh_time {10};
+uint64_t MempoolStatus::mempool_refresh_time {5};
 mutex MempoolStatus::mempool_mutx;
 MempoolStatus::service_node_state MempoolStatus::node_state = {};
 }

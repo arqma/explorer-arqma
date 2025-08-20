@@ -1,4 +1,5 @@
 
+
 <div class="Wrapper">
     <H4 style="margin:5px">TX Hash: {{tx_hash}}</H4>
     {{#enable_mixins_details}}
@@ -46,6 +47,10 @@
             <td>No Of Confirmations: {{confirmations}}</td>
             <td>RingCT / RingCT Type:  {{#is_ringct}}Yes / {{rct_type}}{{/is_ringct}}{{^is_ringct}}No{{/is_ringct}}</td>
         </tr>
+
+        <tr>
+          <td>TX Type: {{tx_type_emoji}} {{tx_type}}</td>
+        <tr>
 
         {{#is_miner_tx}}
         <tr>
@@ -131,7 +136,7 @@
         <div class="TitleDivider"></div>
         <p>Service Node Public Key: {{contribution_service_node_pubkey}}</p>
         <p>Contributor Address: {{contribution_address}}</p>
-        <p>Contribution Amount: {{contribution_amount}} LOKI</p>
+        <p>Contribution Amount: {{contribution_amount}} ARQ</p>
     {{/have_contribution_info}}
 
     {{#have_unlock_info}}
@@ -139,6 +144,13 @@
       <p class="unlock-pubkey">Service Node Public Key: <a href="/service_node/{{unlock_service_node_pubkey}}">{{unlock_service_node_pubkey}}</a></p>
       <p>Unlock key image: {{unlock_key_image}}</p>
       <p>Unlock signature: {{unlock_signature}}</p>
+    {{/have_unlock_info}}
+
+    {{#have_unlock_info}}
+        <h2>Service Node Unlock</h2>
+        <p class="unlock-pubkey">Service Node Public Key: <a href="/service_node/{{unlock_service_node_pubkey}}">{{unlock_service_node_pubkey}}</a></p>
+        <p>Unlock key image: {{unlock_key_image}}</p>
+        <p>Unlock signature: {{unlock_signature}}</p>
     {{/have_unlock_info}}
 
   <h2>Outputs</h2>
@@ -275,7 +287,6 @@
                         <td>Is It Real?</td>
                       {{/have_raw_tx}}
                       <td>Blk</td>
-                      <td>Ring Size</td>
                       <td>In/out</td>
                       <td>Timestamp</td>
                       <td>Age [y:d:h:m:s]</td>
@@ -293,7 +304,6 @@
                         {{/mix_is_it_real}}
                       {{/have_raw_tx}}
                       <td>{{mix_blk}}</td>
-                      <td>{{mix_mixin_no}}</td>
                       <td>{{mix_inputs_no}}/{{mix_outputs_no}}</td>
                       <td>{{mix_timestamp}}</td>
                       <td>{{mix_age}}</td>

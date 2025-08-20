@@ -79,13 +79,12 @@ namespace xmreg
         hw::device* const
         get_device() const;
 
-        virtual ~MicroCore();
     };
 
     bool
     init_blockchain(const string &path,
-                    MicroCore &mcore,
-                    Blockchain* &core_storage,
+                    MicroCore& mcore,
+                    Blockchain*& core_storage,
                     network_type nt);
 
 

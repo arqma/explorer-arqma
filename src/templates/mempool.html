@@ -7,19 +7,21 @@
        <table style="width:100%">
           <tr class="TableHeader">
               <td>Age [HH:MM:SS]</td>
+              <td>Type</td>
               <td>Transaction Hash</td>
               <td>Fee/Per kB</td>
               <!--<td>outputs</td>-->
-              <td>In/Out/PID</td>
+              <td>In/Out</td>
               <td>TX Size [kB]</td>
           </tr>
           {{#mempooltxs}}
           <tr>
               <td>{{age}}</td>
+              <td class=TXType>{{>tx_type_symbol}}</td>
               <td><a href="/tx/{{hash}}">{{hash}}</a></td>
               <td>{{fee}}/{{payed_for_kB}}</td>
               <!--<td>{{lok_outputs}}</td>-->
-              <td>{{no_inputs}}/{{no_outputs}}/{{pID}}</td>
+              <td>{{no_inputs}}/{{no_outputs}}</td>
               <td>{{txsize}}</td>
           </tr>
           {{/mempooltxs}}
