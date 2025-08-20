@@ -18,11 +18,11 @@ namespace myxmr
 {
 struct htmlresponse : public crow::response
 {
-  htmlresponse(string&& _body)
-    : crow::response {std::move(_body)}
-  {
-    add_header("Content-Type", "text/html; charset=utf-8");
-  }
+    htmlresponse(string&& _body)
+            : crow::response {std::move(_body)}
+    {
+        add_header("Content-Type", "text/html; charset=utf-8");
+    }
 };
 
 struct jsonresponse : public crow::response
@@ -63,6 +63,7 @@ main(int ac, const char* av[])
     auto mainnet_url                   = opts.get_option<string>("mainnet-url");
     auto mempool_info_timeout_opt      = opts.get_option<string>("mempool-info-timeout");
     auto mempool_refresh_time_opt      = opts.get_option<string>("mempool-refresh-time");
+    auto log_level                     = opts.get_option<string>("log-level");
     auto testnet_opt                   = opts.get_option<bool>("testnet");
     auto stagenet_opt                  = opts.get_option<bool>("stagenet");
     auto enable_key_image_checker_opt  = opts.get_option<bool>("enable-key-image-checker");
@@ -101,12 +102,10 @@ main(int ac, const char* av[])
     bool enable_as_hex                {*enable_as_hex_opt};
     bool enable_emission_monitor      {*enable_emission_monitor_opt};
 
-
-    // set Arqma log output level
-    uint32_t log_level = 0;
     mlog_configure("", true);
 
-    (void) log_level;
+    if (log_level)
+      mlog_set_log(log_level->c_str());
 
     //cast port number in string to uint
     uint16_t app_port = boost::lexical_cast<uint16_t>(*port_opt);
@@ -155,9 +154,6 @@ main(int ac, const char* av[])
         cerr << "Error getting blockchain path." << endl;
         return EXIT_FAILURE;
     }
-
-    cout << blockchain_path << endl;
-
 
     // create instance of our MicroCore
     // and make pointer to the Blockchain
@@ -272,12 +268,10 @@ main(int ac, const char* av[])
     // get domian url based on the request
     auto get_domain = [&use_ssl](crow::request const& req)
     {
-        auto frontend_host = req.get_header_value("X-Forwarded-Host");
-        auto frontend_ssl = req.get_header_value("X-Forwarded-Proto");
-
-        return ((use_ssl || frontend_ssl == "https") ? "https://" : "http://")
-               + (frontend_host.empty() ? req.get_header_value("Host") : frontend_host);
+        return (use_ssl ? "https://" : "http://")
+               + req.get_header_value("Host");
     };
+
 
     CROW_ROUTE(app, "/")
     ([&]() {
@@ -470,7 +464,6 @@ main(int ac, const char* av[])
             else if (action == "push")
                 return myxmr::htmlresponse(arqblocks.show_pushrawtx(raw_tx_data, action));
             return string("Provided action is neither check nor push");
-
         });
     }
 
@@ -553,7 +546,7 @@ main(int ac, const char* av[])
 
     //CROW_ROUTE(app, "/altblocks")
     //([&]() {
-    //    return myxmr::htmlresponse(arqblocks.altblocks());
+    //    return arqblocks.altblocks();
     //});
 
     if(enable_json_api)
@@ -730,7 +723,6 @@ main(int ac, const char* av[])
 
     CROW_ROUTE(app, "/site.manifest")([&]() { return myxmr::htmlresponse(arqblocks.get_manifest()); });
     CROW_ROUTE(app, "/css/style.css")([&]() { return myxmr::htmlresponse(arqblocks.get_css()); });
-
 
     // run the crow http server
 

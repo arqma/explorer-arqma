@@ -15,7 +15,7 @@
           <a href="/checkpoint_quorum/{{checkpoint_height}}">{{checkpoint_height}}</a>;
           {{checkpoint_signatures_size}}/20 signatures:
           {{#checkpoint_signed_by}}
-          {{#voter_signed}}<span title="Signed by checkpoint quorum voter {{voter_index}}" class="checkpoint-signed"></span>{{/voter_signed}}
+          {{#voter_signed}}<span title="Signed by checkpoint quorum voter {{voter_index}}" class="checkpoint-signed"><strong>✓</strong></span>{{/voter_signed}}
           {{^voter_signed}}<span title="Missing signature from checkpoint quorum voter {{voter_index}}" class="checkpoint-not-signed">x</span>{{/voter_signed}}
           {{/checkpoint_signed_by}}
       </td>

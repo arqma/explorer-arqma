@@ -307,9 +307,9 @@ string CurrentBlockchainStatus::output_file {"emission_amount.txt"};
 
 string CurrentBlockchainStatus::daemon_url {"http://127.0.0.1:19994"};
 
-uint64_t CurrentBlockchainStatus::blockchain_chunk_size {10000};
+uint64_t CurrentBlockchainStatus::blockchain_chunk_size {5000};
 
-uint64_t CurrentBlockchainStatus::blockchain_chunk_gap {3};
+uint64_t CurrentBlockchainStatus::blockchain_chunk_gap {1};
 
 atomic<uint64_t> CurrentBlockchainStatus::current_height {0};
 

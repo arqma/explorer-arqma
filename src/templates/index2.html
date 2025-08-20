@@ -44,12 +44,14 @@
             Network difficulty: {{difficulty}}
             | Hard fork: v{{current_hf_version}}
             | Hash rate: {{hash_rate}}
-            | Staking Requirement: {{staking_requirement}}
+            | Staking Requirement: {{staking_requirement}} ARQ
             | Fee per byte: {{fee_per_kb}}
             | Median block size limit: {{block_size_limit}} kB
             | Data From {{age}} {{age_format}} ago
         </p>
     {{/network_info}}
+
+    <p>TX Types Legend: Registration: 🏁 | Contribution: ⚑ | Recommission: 👍 | Decommission: 👎 | Deregister: 🚫 | IP Change Penalty: 📋 | Stake Unlock: 🔓</p>
 
     {{#emission}}
         <p style="margin-top: 2px">
@@ -77,10 +79,11 @@
                 <td>Height</td>
                 <td>Age {{age_format}}<!--(Δm)--></td>
                 <td>Size [kB]<!--(Δm)--></td>
+                <td>Type</td>
                 <td>Transaction Hash</td>
                 <td>Fee</td>
                 <td>Outputs</td>
-                <td>In/Out/PID</td>
+                <td>In/Out</td>
                 <td>TX Size [kB]</td>
             </tr>
             {{#txs}}
@@ -88,10 +91,11 @@
                 <td><a href="/block/{{height}}">{{height}}</a></td>
                 <td>{{age}}<!--{{time_delta}}--></td>
                 <td>{{blk_size}}</td>
+                <td class="TXType">{{>tx_type_symbol}}</td>
                 <td><a href="/tx/{{hash}}">{{hash}}</a></td>
                 <td>{{tx_fee_short}}</td>
                 <td>{{sum_outputs_short}}</td>
-                <td>{{no_inputs}}/{{no_outputs}}/{{pID}}</td>
+                <td>{{no_inputs}}/{{no_outputs}}</td>
                 <td>{{tx_size_short}}</td>
             </tr>
             {{/txs}}

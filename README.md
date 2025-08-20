@@ -112,7 +112,7 @@ Example output:
 (2016-05-28 02:04:49) [INFO    ] Crow/0.1 server is running, local port 8081
 ```
 
-Go to your browser: http://127.0.0.1:8081
+Go to your browser: http://127.0.0.1:19990
 
 ## The explorer's command line options
 
@@ -130,7 +130,7 @@ arqblocks, Arqma Onion Blockchain Explorer:
   --enable-autorefresh-option [=arg(=1)] (=1)		enable users to have the index page on autorefresh
   --enable-emission-monitor [=arg(=1)] (=1)		enable Arqma Network total emission monitoring thread
   -p [ --port ] arg (=19990)				default explorer port
-  -x [ --bindaddr ] arg (=0.0.0.0)			default bind address for the explorer (default=127.0.0.1)
+  -x [ --bindaddr ] arg (=127.0.0.1)			default bind address for the explorer (default=127.0.0.1)
   --testnet-url arg					you can specify testnet url, if you run it on mainnet or stagenet. link will show on front page to testnet explorer
   --stagenet-url arg					you can specify stagenet url, if you run it on mainnet or testnet. link will show on front page to stagenet explorer
   --mainnet-url arg					you can specify mainnet url, if you run it on testnet or stagenet. link will show on front page to mainnet explorer
@@ -141,7 +141,7 @@ arqblocks, Arqma Onion Blockchain Explorer:
   -b [ --bc-path ] arg					path to lmdb folder of the blockchain, e.g., ~/.arqma/lmdb
   --ssl-crt-file arg					path to crt file for ssl (https) functionality
   --ssl-key-file arg					path to key file for ssl (https) functionality
-  -d [ --daemon-url ] arg (=http://127.0.0.1:19994)	Arqma Network daemon url
+  -d [ --daemon-url ] arg (=127.0.0.1:19994)	Arqma Network daemon url
 ```
 
 Example usage, defined as bash aliases.

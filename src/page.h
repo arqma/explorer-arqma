@@ -30,7 +30,6 @@
 #include "../ext/json.hpp"
 #include "../ext/mstch/src/visitor/render_node.hpp"
 
-
 #include <algorithm>
 #include <limits>
 #include <ctime>
@@ -65,7 +64,7 @@
 
 #define TMPL_MANIFEST               TMPL_DIR "/site.manifest"
 
-#define ARQMAEXPLORER_RPC_VERSION_MAJOR 7
+#define ARQMAEXPLORER_RPC_VERSION_MAJOR 8
 #define ARQMAEXPLORER_RPC_VERSION_MINOR 0
 #define MAKE_ARQMAEXPLORER_RPC_VERSION(major,minor) (((major)<<16)|(minor))
 #define ARQMAEXPLORER_RPC_VERSION MAKE_ARQMAEXPLORER_RPC_VERSION(ARQMAEXPLORER_RPC_VERSION_MAJOR, ARQMAEXPLORER_RPC_VERSION_MINOR)
@@ -143,13 +142,13 @@ using namespace std;
 using epee::string_tools::pod_to_hex;
 using epee::string_tools::hex_to_pod;
 
-template< typename T >
+template <typename T>
 std::string as_hex(T i)
 {
   std::stringstream ss;
-
-  ss << "0x" << setfill ('0') << setw(sizeof(T)*2)
-         << hex << i;
+  ss << "0x" << setfill ('0')
+     << setw(sizeof(T)*2)
+     << hex << i;
   return ss.str();
 }
 
@@ -176,10 +175,6 @@ struct tx_details
 
     bool has_additional_tx_pub_keys {false};
 
-    char     pID; // '-' - no payment ID,
-                  // 'l' - legacy, long 64 character payment id,
-                  // 'e' - encrypted, short, from integrated addresses
-                  // 's' - sub-address (avaliable only for multi-output txs)
     uint64_t unlock_time;
     uint64_t no_confirmations;
     vector<uint8_t> extra;
@@ -226,9 +221,9 @@ struct tx_details
 
 
         mstch::map txd_map {
-                {"hash"              , pod_to_hex(hash)},
-                {"prefix_hash"       , pod_to_hex(prefix_hash)},
-                {"pub_key"           , pod_to_hex(pk)},
+                {"hash"              , epee::string_tools::pod_to_hex(hash)},
+                {"prefix_hash"       , epee::string_tools::pod_to_hex(prefix_hash)},
+                {"pub_key"           , epee::string_tools::pod_to_hex(pk)},
                 {"tx_fee"            , fee_str},
                 {"tx_fee_short"      , fee_short_str},
                 {"fee_nano"          , fee_nano_str},
@@ -246,11 +241,10 @@ struct tx_details
                 {"version"           , static_cast<uint64_t>(version)},
                 {"has_payment_id"    , payment_id  != null_hash},
                 {"has_payment_id8"   , payment_id8 != null_hash8},
-                {"pID"               , string {pID}},
-                {"payment_id"        , pod_to_hex(payment_id)},
+                {"payment_id"        , epee::string_tools::pod_to_hex(payment_id)},
                 {"confirmations"     , no_confirmations},
                 {"extra"             , get_extra_str()},
-                {"payment_id8"       , pod_to_hex(payment_id8)},
+                {"payment_id8"       , epee::string_tools::pod_to_hex(payment_id8)},
                 {"unlock_time"       , unlock_time},
                 {"tx_size"           , fmt::format("{:0.4f}", tx_size)},
                 {"tx_size_short"     , fmt::format("{:0.4f}", tx_size)},
@@ -354,6 +348,8 @@ string mainnet_url;
 // read operation in OS
 map<string, string> template_file;
 
+map<string, string> partials;
+
 public:
 
 page(MicroCore* _mcore,
@@ -397,10 +393,10 @@ page(MicroCore* _mcore,
     snode_context = {};
     snode_context.num_entries_on_front_page = 10;
 
-    no_quorum_entries_on_frontpage = 1;
-    no_checkpoint_entries_on_frontpage = 3;
+    no_quorum_entries_on_frontpage = 3;
+    no_checkpoint_entries_on_frontpage = 5;
 
-    no_of_mempool_tx_of_frontpage = 25;
+    no_of_mempool_tx_of_frontpage = 10;
 
     // read template files for all the pages
     // into template_file map
@@ -432,11 +428,13 @@ page(MicroCore* _mcore,
     template_file["checkoutputkeys"]     = get_full_page(xmreg::read(TMPL_MY_CHECKRAWOUTPUTKEYS));
     template_file["address"]             = get_full_page(xmreg::read(TMPL_ADDRESS));
     template_file["search_results"]      = get_full_page(xmreg::read(TMPL_SEARCH_RESULTS));
-    template_file["tx_details"]          = xmreg::read(string(TMPL_PARTIALS_DIR) + "/tx_details.html");
-    template_file["tx_table_head"]       = xmreg::read(string(TMPL_PARTIALS_DIR) + "/tx_table_header.html");
-    template_file["tx_table_row"]        = xmreg::read(string(TMPL_PARTIALS_DIR) + "/tx_table_row.html");
 
     template_file["site_manifest"]       = xmreg::read(TMPL_MANIFEST);
+
+    partials["tx_details"]               = xmreg::read(string(TMPL_PARTIALS_DIR) + "/tx_details.html");
+    partials["tx_table_head"]            = xmreg::read(string(TMPL_PARTIALS_DIR) + "/tx_table_header.html");
+    partials["tx_table_row"]             = xmreg::read(string(TMPL_PARTIALS_DIR) + "/tx_table_row.html");
+    partials["tx_type_symbol"]           = xmreg::read(string(TMPL_PARTIALS_DIR) + "/tx_type_symbol.html");
 }
 
 std::string portions_to_percent(uint64_t portions)
@@ -819,7 +817,7 @@ std::string render_checkpoints_html(bool add_header_and_footer)
     checkpoints.push_back(std::move(checkpoint));
   }
 
-  mstch::map page_context = {};
+  mstch::map page_context {};
   page_context.emplace("checkpoint_array_size", checkpoints.size());
   page_context.emplace("checkpoint_array", std::move(checkpoints));
 
@@ -839,7 +837,7 @@ void add_tx_metadata(mstch::map &context, const cryptonote::transaction &tx, boo
     if (detailed)
     {
       crypto::public_key winner = cryptonote::get_service_node_winner_from_tx_extra(tx.extra);
-      context["service_node_winner"] = pod_to_hex(winner);
+      context["service_node_winner"] = epee::string_tools::pod_to_hex(winner);
     }
   }
 
@@ -887,7 +885,7 @@ void add_tx_metadata(mstch::map &context, const cryptonote::transaction &tx, boo
           mstch::map entry
           {
             {"state_change_voters_quorum_index", vote.validator_index},
-            {"state_change_signature", pod_to_hex(vote.signature)},
+            {"state_change_signature", epee::string_tools::pod_to_hex(vote.signature)},
           };
           if (vote.validator_index < quorum_nodes.size())
             entry["state_change_voter_pubkey"] = quorum_nodes[vote.validator_index];
@@ -907,8 +905,8 @@ void add_tx_metadata(mstch::map &context, const cryptonote::transaction &tx, boo
     context["unlock_service_node_pubkey"] = extract_sn_pubkey(tx.extra);
     if (detailed)
     {
-      context["unlock_key_image"] = pod_to_hex(unlock_.key_image);
-      context["unlock_signature"] = pod_to_hex(unlock_.signature);
+      context["unlock_key_image"] = epee::string_tools::pod_to_hex(unlock_.key_image);
+      context["unlock_signature"] = epee::string_tools::pod_to_hex(unlock_.signature);
     }
   }
   else if (get_service_node_register_from_tx_extra(tx.extra, register_))
@@ -922,7 +920,7 @@ void add_tx_metadata(mstch::map &context, const cryptonote::transaction &tx, boo
       context["register_expiration_timestamp_friendly"]  = timestamp_to_str_gm(register_.m_expiration_timestamp);
       context["register_expiration_timestamp_relative"] = get_human_time_ago(register_.m_expiration_timestamp, time(nullptr));
       context["register_expiration_timestamp"] = register_.m_expiration_timestamp;
-      context["register_signature"] = pod_to_hex(register_.m_service_node_signature);
+      context["register_signature"] = epee::string_tools::pod_to_hex(register_.m_service_node_signature);
 
       auto &array = get<mstch::array>(context.emplace("register_array", mstch::array()).first->second);
       array.reserve(register_.m_public_spend_keys.size());
@@ -967,21 +965,6 @@ void add_tx_metadata(mstch::map &context, const cryptonote::transaction &tx, boo
 string
 index2(uint64_t page_no = 0, bool refresh_page = false)
 {
-
-    // we get network info, such as current hash rate
-    // but since this makes a rpc call to daemon, we make it as an async
-    // call. this way we dont have to wait with execution of the rest of the
-    // index2 method, until daemon gives as the required result.
-    std::future<json> network_info_ftr = std::async(std::launch::async, [&]
-    {
-        json j_info;
-
-        get_arqma_network_info(j_info);
-
-        return j_info;
-    });
-
-
     // get mempool for the front page also using async future
     std::future<string> mempool_ftr = std::async(std::launch::async, [&]
     {
@@ -1070,7 +1053,7 @@ index2(uint64_t page_no = 0, bool refresh_page = false)
         blk_sizes.push_back(blk_size);
 
         // remove "<" and ">" from the hash string
-        string blk_hash_str = pod_to_hex(blk_hash);
+        string blk_hash_str = epee::string_tools::pod_to_hex(blk_hash);
 
         // get block age
         pair<string, string> age = get_age(local_copy_server_timestamp, blk.timestamp);
@@ -1240,7 +1223,7 @@ index2(uint64_t page_no = 0, bool refresh_page = false)
     add_css_style(context);
 
     // render the page
-    return mstch::render(template_file["index2"], context);
+    return mstch::render(template_file["index2"], context, partials);
 }
 
 /**
@@ -1321,7 +1304,7 @@ mempool(bool add_header_and_footer = false, uint64_t no_of_mempool_tx = 25)
                 {"timestamp_no"      , mempool_tx.receive_time},
                 {"timestamp"         , mempool_tx.timestamp_str},
                 {"age"               , age_str},
-                {"hash"              , pod_to_hex(mempool_tx.tx_hash)},
+                {"hash"              , epee::string_tools::pod_to_hex(mempool_tx.tx_hash)},
                 {"fee"               , mempool_tx.fee_str},
                 {"fee_nano"          , mempool_tx.fee_nano_str},
                 {"payed_for_kB"      , mempool_tx.payed_for_kB_str},
@@ -1330,7 +1313,6 @@ mempool(bool add_header_and_footer = false, uint64_t no_of_mempool_tx = 25)
                 {"arq_outputs"       , mempool_tx.arq_outputs_str},
                 {"no_inputs"         , mempool_tx.no_inputs},
                 {"no_outputs"        , mempool_tx.no_outputs},
-                {"pID"               , string {mempool_tx.pID}},
                 {"no_nonrct_inputs"  , mempool_tx.num_nonrct_inputs},
                 {"mixin"             , mempool_tx.mixin_no},
                 {"txsize"            , mempool_tx.txsize}
@@ -1351,7 +1333,7 @@ mempool(bool add_header_and_footer = false, uint64_t no_of_mempool_tx = 25)
         context["partial_mempool_shown"] = false;
 
         // render the page
-        return mstch::render(template_file["mempool_full"], context);
+        return mstch::render(template_file["mempool_full"], context, partials);
     }
 
     // this is for partial disply on front page.
@@ -1362,7 +1344,7 @@ mempool(bool add_header_and_footer = false, uint64_t no_of_mempool_tx = 25)
     context["partial_mempool_shown"] = true;
 
     // render the page
-    return mstch::render(template_file["mempool"], context);
+    return mstch::render(template_file["mempool"], context, partials);
 }
 
 
@@ -1478,11 +1460,11 @@ show_block(uint64_t _blk_height)
     bool have_prev_hash = (prev_hash == null_hash ? false : true);
 
     // remove "<" and ">" from the hash string
-    string prev_hash_str = pod_to_hex(prev_hash);
-    string next_hash_str = pod_to_hex(next_hash);
+    string prev_hash_str = epee::string_tools::pod_to_hex(prev_hash);
+    string next_hash_str = epee::string_tools::pod_to_hex(next_hash);
 
     // remove "<" and ">" from the hash string
-    string blk_hash_str  = pod_to_hex(blk_hash);
+    string blk_hash_str  = epee::string_tools::pod_to_hex(blk_hash);
 
     // get block timestamp in user friendly format
     string blk_timestamp = xmreg::timestamp_to_str_gm(blk.timestamp);
@@ -1521,7 +1503,7 @@ show_block(uint64_t _blk_height)
 
     // initalise page tempate map with basic info about blockchain
 
-    string blk_pow_hash_str = pod_to_hex(get_block_longhash(core_storage, blk, _blk_height, 0));
+    string blk_pow_hash_str = pod_to_hex(get_block_longhash(core_storage, blk, blk_hash, _blk_height, 0));
     uint64_t blk_difficulty = core_storage->get_db().get_block_difficulty(_blk_height);
 
     mstch::map context {
@@ -1571,7 +1553,7 @@ show_block(uint64_t _blk_height)
         const crypto::hash &tx_hash = blk.tx_hashes.at(i);
 
         // remove "<" and ">" from the hash string
-        string tx_hash_str = pod_to_hex(tx_hash);
+        string tx_hash_str = epee::string_tools::pod_to_hex(tx_hash);
 
 
         // get transaction
@@ -1671,7 +1653,7 @@ show_service_node(const std::string &service_node_pubkey)
         if (sn_key != service_node_pubkey)
           continue;
         mstch::map contrib;
-        contrib["txid"] = pod_to_hex(mempool_tx.tx_hash);
+        contrib["txid"] = epee::string_tools::pod_to_hex(mempool_tx.tx_hash);
         contrib["address"] = get_account_address_as_str(nettype, false, contributor);
         uint64_t amount = get_amount_from_stake(mempool_tx.tx, contributor);
         contrib["amount"] = amount > 0 ? xmreg::arq_amount_to_str(amount, "{:0.9f}", true) : "<decode error>";
@@ -1766,11 +1748,6 @@ show_tx(string tx_hash_str, uint16_t with_ring_signatures = 0)
 
     boost::get<mstch::array>(context["txs"]).push_back(tx_context);
 
-    map<string, string> partials
-    {
-      {"tx_details", template_file["tx_details"]},
-    };
-
     add_css_style(context);
 
     // render the page
@@ -1831,20 +1808,19 @@ show_block_hex(size_t block_height, bool complete_blk)
                 return string {"Failed to obtain complete block data "};
             }
 
-            epee::byte_slice complete_block_data_slice;
+            //epee::byte_slice complete_block_data_slice;
+            std::string complete_block_data_str;
 
             if(!epee::serialization::store_t_to_binary(
-                        complete_block_data, complete_block_data_slice))
+                        complete_block_data, complete_block_data_str/*complete_block_data_slice*/))
             {
                 cerr << "Failed to serialize complete_block_data\n";
                 return string {"Failed to obtain complete block data"};
             }
 
-            std::string block_data_str(
-              complete_block_data_slice.begin(),
-              complete_block_data_slice.end());
+            //std::string block_data_str(complete_block_data_slice.begin(), complete_block_data_slice.end());
 
-            return epee::string_tools::buff_to_hex_nodelimer(block_data_str);
+            return epee::string_tools::buff_to_hex_nodelimer(complete_block_data_str/*block_data_str*/);
         }
     }
     catch (std::exception const& e)
@@ -1905,7 +1881,7 @@ show_ringmembers_hex(string const& tx_hash_str)
         absolute_offsets.push_back(in_key.amount);
 
         for (auto const &mo: mixin_outputs)
-            all_mixin_outputs[absolute_offsets].emplace_back(pod_to_hex(mo));
+            all_mixin_outputs[absolute_offsets].emplace_back(epee::string_tools::pod_to_hex(mo));
 
     } // for (txin_to_key const& in_key: input_key_imgs)
 
@@ -1986,7 +1962,7 @@ show_ringmemberstx_hex(string const &tx_hash_str)
            if (!mcore->get_tx(mixin_tx_hash, mixin_tx))
            {
                throw std::runtime_error("Cant get tx: "
-                                        + pod_to_hex(mixin_tx_hash));
+                                        + epee::string_tools::pod_to_hex(mixin_tx_hash));
            }
 
            // serialize tx
@@ -1994,7 +1970,7 @@ show_ringmemberstx_hex(string const &tx_hash_str)
                                    t_serializable_object_to_blob(mixin_tx));
 
            all_mixin_txs[map_key].push_back(
-                       pod_to_hex(mixin_tx_hash)
+                       epee::string_tools::pod_to_hex(mixin_tx_hash)
                        + std::to_string(output_index_in_tx)
                        + tx_hex);
         }
@@ -2123,10 +2099,11 @@ show_ringmemberstx_jsonhex(string const &tx_hash_str)
         return json {"error", "Failed to obtain complete block data "};
     }
 
-    epee::byte_slice complete_block_data_slice;
+    //epee::byte_slice complete_block_data_slice;
+    std::string complete_block_data_str;
 
     if(!epee::serialization::store_t_to_binary(
-                complete_block_data, complete_block_data_slice))
+                complete_block_data, complete_block_data_str/*complete_block_data_slice*/))
     {
         cerr << "Failed to serialize complete_block_data\n";
         return json {"error", "Failed to obtain complete block data"};
@@ -2134,11 +2111,11 @@ show_ringmemberstx_jsonhex(string const &tx_hash_str)
 
     tx_details txd = get_tx_details(tx);
 
-    tx_json["payment_id"] = pod_to_hex(txd.payment_id);
-    tx_json["payment_id8"] = pod_to_hex(txd.payment_id8);
-    tx_json["payment_id8e"] = pod_to_hex(txd.payment_id8);
+    tx_json["payment_id"] = epee::string_tools::pod_to_hex(txd.payment_id);
+    tx_json["payment_id8"] = epee::string_tools::pod_to_hex(txd.payment_id8);
+    tx_json["payment_id8e"] = epee::string_tools::pod_to_hex(txd.payment_id8);
 
-    std::string complete_block_data_str(complete_block_data_slice.begin(), complete_block_data_slice.end());
+    //std::string complete_block_data_str(complete_block_data_slice.begin(), complete_block_data_slice.end());
 
     tx_json["block"] = epee::string_tools::buff_to_hex_nodelimer(complete_block_data_str);
 
@@ -2193,7 +2170,7 @@ show_ringmemberstx_jsonhex(string const &tx_hash_str)
         }
 
 
-        tx_json["inputs"].push_back(json {{"key_image", pod_to_hex(in_key.k_image)},
+        tx_json["inputs"].push_back(json {{"key_image", epee::string_tools::pod_to_hex(in_key.k_image)},
                                           {"amount", in_key.amount},
                                           {"absolute_offsets", absolute_offsets},
                                           {"ring_members", json::array()}});
@@ -2223,7 +2200,7 @@ show_ringmemberstx_jsonhex(string const &tx_hash_str)
            if (!mcore->get_tx(mixin_tx_hash, mixin_tx))
            {
                throw std::runtime_error("Cant get tx: "
-                                        + pod_to_hex(mixin_tx_hash));
+                                        + epee::string_tools::pod_to_hex(mixin_tx_hash));
            }
 
            // serialize tx
@@ -2232,8 +2209,8 @@ show_ringmemberstx_jsonhex(string const &tx_hash_str)
 
            ring_members.push_back(
                    json {
-                          {"ouput_pk", pod_to_hex(mo.pubkey)},
-                          {"tx_hash", pod_to_hex(mixin_tx_hash)},
+                          {"ouput_pk", epee::string_tools::pod_to_hex(mo.pubkey)},
+                          {"tx_hash", epee::string_tools::pod_to_hex(mixin_tx_hash)},
                           {"output_index_in_tx", txi.second},
                           {"tx_hex", tx_hex},
                    });
@@ -2454,8 +2431,8 @@ show_my_outputs(string tx_hash_str,
     }
 
     // payments id. both normal and encrypted (payment_id8)
-    string pid_str   = pod_to_hex(txd.payment_id);
-    string pid8_str  = pod_to_hex(txd.payment_id8);
+    string pid_str   = epee::string_tools::pod_to_hex(txd.payment_id);
+    string pid8_str  = epee::string_tools::pod_to_hex(txd.payment_id8);
 
     string shortcut_url = tx_prove ? string("/prove") : string("/myoutputs")
                           + '/' + tx_hash_str
@@ -2474,10 +2451,10 @@ show_my_outputs(string tx_hash_str,
             {"testnet"              , testnet},
             {"stagenet"             , stagenet},
             {"tx_hash"              , tx_hash_str},
-            {"tx_prefix_hash"       , pod_to_hex(txd.prefix_hash)},
+            {"tx_prefix_hash"       , epee::string_tools::pod_to_hex(txd.prefix_hash)},
             {"arq_address"          , arq_address_str},
             {"viewkey"              , viewkey_str_partial},
-            {"tx_pub_key"           , pod_to_hex(txd.pk)},
+            {"tx_pub_key"           , epee::string_tools::pod_to_hex(txd.pk)},
             {"blk_height"           , tx_blk_height_str},
             {"tx_size"              , fmt::format("{:0.4f}", static_cast<double>(txd.size) / 1024.0)},
             {"tx_fee"               , xmreg::arq_amount_to_str(txd.fee, "{:0.9f}", true)},
@@ -2512,7 +2489,7 @@ show_my_outputs(string tx_hash_str,
 
     public_key pub_key = tx_prove ? address_info.address.m_view_public_key : txd.pk;
 
-    //cout << "txd.pk: " << pod_to_hex(txd.pk) << endl;
+    //cout << "txd.pk: " << epee::string_tools::pod_to_hex(txd.pk) << endl;
 
     if (!generate_key_derivation(pub_key,
                                  tx_prove ? multiple_tx_secret_keys[0] : prv_view_key,
@@ -2520,7 +2497,7 @@ show_my_outputs(string tx_hash_str,
     {
         cerr << "Cant get derived key for: "  << "\n"
              << "pub_tx_key: " << pub_key << " and "
-             << "prv_view_key" << pod_to_hex(unwrap(unwrap(prv_view_key))) << endl;
+             << "prv_view_key" << epee::string_tools::pod_to_hex(unwrap(unwrap(prv_view_key))) << endl;
 
         return string("Cant get key_derivation");
     }
@@ -2533,7 +2510,7 @@ show_my_outputs(string tx_hash_str,
         {
             cerr << "Cant get derived key for: "  << "\n"
                  << "pub_tx_key: " << txd.additional_pks[i] << " and "
-                 << "prv_view_key" << pod_to_hex(unwrap(unwrap(prv_view_key))) << endl;
+                 << "prv_view_key" << epee::string_tools::pod_to_hex(unwrap(unwrap(prv_view_key))) << endl;
 
             return string("Cant get key_derivation");
         }
@@ -2547,7 +2524,7 @@ show_my_outputs(string tx_hash_str,
         if (mcore->get_device()->decrypt_payment_id(
                     decrypted_payment_id8, pub_key, prv_view_key))
         {
-            context["decrypted_payment_id8"] = pod_to_hex(decrypted_payment_id8);
+            context["decrypted_payment_id8"] = epee::string_tools::pod_to_hex(decrypted_payment_id8);
         }
     }
 
@@ -2574,10 +2551,10 @@ show_my_outputs(string tx_hash_str,
                           address_info.address.m_spend_public_key,
                           tx_pubkey);
 
-//        cout << pod_to_hex(derivation) << ", " << output_idx << ", "
-//             << pod_to_hex(address_info.address.m_spend_public_key) << ", "
-//             << pod_to_hex(outp.first.key) << " == "
-//             << pod_to_hex(tx_pubkey) << '\n'  << '\n';
+//        cout << epee::string_tools::pod_to_hex(derivation) << ", " << output_idx << ", "
+//             << epee::string_tools::pod_to_hex(address_info.address.m_spend_public_key) << ", "
+//             << epee::string_tools::pod_to_hex(outp.first.key) << " == "
+//             << epee::string_tools::pod_to_hex(tx_pubkey) << '\n'  << '\n';
 
         // check if generated public key matches the current output's key
         bool mine_output = (outp.first.key == tx_pubkey);
@@ -2635,7 +2612,7 @@ show_my_outputs(string tx_hash_str,
         }
 
         outputs.push_back(mstch::map {
-                {"out_pub_key"           , pod_to_hex(outp.first.key)},
+                {"out_pub_key"           , epee::string_tools::pod_to_hex(outp.first.key)},
                 {"amount"                , xmreg::arq_amount_to_str(outp.second)},
                 {"mine_output"           , mine_output},
                 {"output_idx"            , fmt::format("{:02d}", output_idx)}
@@ -2694,7 +2671,7 @@ show_my_outputs(string tx_hash_str,
         }
 
         inputs.push_back(mstch::map{
-          {"key_image", pod_to_hex(in_key.k_image)},
+          {"key_image", epee::string_tools::pod_to_hex(in_key.k_image)},
           {"key_image_amount", xmreg::arq_amount_to_str(in_key.amount)},
           make_pair(string("mixins"), mstch::array{})
         });
@@ -2722,7 +2699,7 @@ show_my_outputs(string tx_hash_str,
             break;
           }
 
-          string out_pub_key_str = pod_to_hex(output_data.pubkey);
+          string out_pub_key_str = epee::string_tools::pod_to_hex(output_data.pubkey);
 
           transaction mixin_tx;
 
@@ -2732,7 +2709,7 @@ show_my_outputs(string tx_hash_str,
             break;
           }
 
-          string mixin_tx_hash_str = pod_to_hex(tx_out_idx.first);
+          string mixin_tx_hash_str = epee::string_tools::pod_to_hex(tx_out_idx.first);
 
           mixins.push_back(mstch::map{
             {"mixin_pub_key"      , out_pub_key_str},
@@ -2745,7 +2722,7 @@ show_my_outputs(string tx_hash_str,
 
           public_key mixin_tx_pub_key = xmreg::get_tx_pub_key_from_received_outs(mixin_tx);
           std::vector<public_key> mixin_additional_tx_pub_keys = cryptonote::get_additional_tx_pub_keys_from_extra(mixin_tx);
-          string mixin_tx_pub_key_str = pod_to_hex(mixin_tx_pub_key);
+          string mixin_tx_pub_key_str = epee::string_tools::pod_to_hex(mixin_tx_pub_key);
           key_derivation derivation;
 
           std::vector<key_derivation> additional_derivations(mixin_additional_tx_pub_keys.size());
@@ -2753,7 +2730,7 @@ show_my_outputs(string tx_hash_str,
           {
             cerr << "Cant get derived key for: " << "\n"
                  << "pub_tx_key: " << mixin_tx_pub_key << " and "
-                 << "prv_view_key" << pod_to_hex(unwrap(unwrap(prv_view_key))) << endl;
+                 << "prv_view_key" << epee::string_tools::pod_to_hex(unwrap(unwrap(prv_view_key))) << endl;
             continue;
           }
 
@@ -2763,7 +2740,7 @@ show_my_outputs(string tx_hash_str,
             {
               cerr << "Cant get derived key for: "  << "\n"
                    << "pub_tx_key: " << mixin_additional_tx_pub_keys[i]
-                   << " and prv_view_key" << pod_to_hex(unwrap(unwrap(prv_view_key))) << endl;
+                   << " and prv_view_key" << epee::string_tools::pod_to_hex(unwrap(unwrap(prv_view_key))) << endl;
               continue;
             }
           }
@@ -2855,7 +2832,7 @@ show_my_outputs(string tx_hash_str,
 
                 // save our mixnin's public keys
             found_outputs.push_back(mstch::map {
-                        {"my_public_key"   , pod_to_hex(txout_k.key)},
+                        {"my_public_key"   , epee::string_tools::pod_to_hex(txout_k.key)},
                         {"tx_hash"         , tx_hash_str},
                         {"mine_output"     , mine_output},
                         {"out_idx"         , output_idx_in_tx},
@@ -2910,12 +2887,12 @@ show_my_outputs(string tx_hash_str,
 //                                                       address.m_spend_public_key,
 //                                                       key_img)) {
 //                            cerr << "Cant generate key image for output: "
-//                                 << pod_to_hex(output_data.pubkey) << endl;
+//                                 << epee::string_tools::pod_to_hex(output_data.pubkey) << endl;
 //                            break;
 //                        }
 //
-//                        cout    << "output_data.pubkey: " << pod_to_hex(output_data.pubkey)
-//                                << ", key_img: " << pod_to_hex(key_img)
+//                        cout    << "output_data.pubkey: " << epee::string_tools::pod_to_hex(output_data.pubkey)
+//                                << ", key_img: " << epee::string_tools::pod_to_hex(key_img)
 //                                << ", key_img == input_key: " << (key_img == in_key.k_image)
 //                                << endl;
 
@@ -3135,7 +3112,7 @@ show_checkrawtx(string raw_tx_data, string action)
                     mstch::map single_dest_source {
                             {"output_amount"              , xmreg::arq_amount_to_str(tx_source.amount)},
                             {"real_output"                , static_cast<uint64_t>(tx_source.real_output)},
-                            {"real_out_tx_key"            , pod_to_hex(tx_source.real_out_tx_key)},
+                            {"real_out_tx_key"            , epee::string_tools::pod_to_hex(tx_source.real_out_tx_key)},
                             {"real_output_in_tx_index"    , static_cast<uint64_t>(tx_source.real_output_in_tx_index)},
                     };
                     single_dest_source.emplace("outputs", mstch::array{});
@@ -3179,7 +3156,7 @@ show_checkrawtx(string raw_tx_data, string action)
                     if (!mcore->get_tx(real_toi.first, real_source_tx))
                     {
                         cerr << "Cant get tx in blockchain: " << real_toi.first << endl;
-                        return string("Cant get tx: " + pod_to_hex(real_toi.first));
+                        return string("Cant get tx: " + epee::string_tools::pod_to_hex(real_toi.first));
                     }
 
                     tx_details real_txd = get_tx_details(real_source_tx);
@@ -3188,9 +3165,9 @@ show_checkrawtx(string raw_tx_data, string action)
 
                     public_key real_out_pub_key = real_txd.output_pub_keys[tx_source.real_output_in_tx_index].first.key;
 
-                    //cout << "real_txd.hash: "    << pod_to_hex(real_txd.hash) << endl;
-                    //cout << "real_txd.pk: "      << pod_to_hex(real_txd.pk) << endl;
-                    //cout << "real_out_pub_key: " << pod_to_hex(real_out_pub_key) << endl;
+                    //cout << "real_txd.hash: "    << epee::string_tools::pod_to_hex(real_txd.hash) << endl;
+                    //cout << "real_txd.pk: "      << epee::string_tools::pod_to_hex(real_txd.pk) << endl;
+                    //cout << "real_out_pub_key: " << epee::string_tools::pod_to_hex(real_out_pub_key) << endl;
 
                     mstch::array &outputs = boost::get<mstch::array>(single_dest_source["outputs"]);
 
@@ -3230,7 +3207,7 @@ show_checkrawtx(string raw_tx_data, string action)
                             cerr << "Cant get tx in blockchain: " << toi.first
                                  << ". \n Check mempool now" << endl;
                             // tx is nowhere to be found :-(
-                            return string("Cant get tx: " + pod_to_hex(toi.first));
+                            return string("Cant get tx: " + epee::string_tools::pod_to_hex(toi.first));
                         }
 
                         tx_details txd = get_tx_details(tx);
@@ -3251,9 +3228,9 @@ show_checkrawtx(string raw_tx_data, string action)
 
                         mstch::map single_output {
                                 {"out_index"          , oe.first},
-                                {"tx_hash"            , pod_to_hex(txd.hash)},
-                                {"out_pub_key"        , pod_to_hex(out_pub_key)},
-                                {"ctkey"              , pod_to_hex(oe.second)},
+                                {"tx_hash"            , epee::string_tools::pod_to_hex(txd.hash)},
+                                {"out_pub_key"        , epee::string_tools::pod_to_hex(out_pub_key)},
+                                {"ctkey"              , epee::string_tools::pod_to_hex(oe.second)},
                                 {"output_age"         , age.first},
                                 {"is_real"            , (out_pub_key == real_out_pub_key)}
                         };
@@ -3393,11 +3370,6 @@ show_checkrawtx(string raw_tx_data, string action)
 
             boost::get<mstch::array>(context["txs"]).push_back(tx_context);
 
-            map<string, string> partials
-            {
-              {"tx_details", template_file["tx_details"]},
-            };
-
             add_css_style(context);
 
             // render the page
@@ -3446,7 +3418,7 @@ show_checkrawtx(string raw_tx_data, string action)
                 return boost::get<string>(tx_context["error_msg"]);
             }
 
-            tx_context["tx_prv_key"] = fmt::format("{:s}", pod_to_hex(unwrap(unwrap(ptx.tx_key))));
+            tx_context["tx_prv_key"] = fmt::format("{:s}", epee::string_tools::pod_to_hex(unwrap(unwrap(ptx.tx_key))));
 
             mstch::array destination_addresses;
             vector<uint64_t> real_ammounts;
@@ -3557,7 +3529,7 @@ show_checkrawtx(string raw_tx_data, string action)
                 if (!mcore->get_tx(real_toi.first, real_source_tx))
                 {
                     cerr << "Cant get tx in blockchain: " << real_toi.first << endl;
-                    return string("Cant get tx: " + pod_to_hex(real_toi.first));
+                    return string("Cant get tx: " + epee::string_tools::pod_to_hex(real_toi.first));
                 }
 
                 tx_details real_txd = get_tx_details(real_source_tx);
@@ -3645,11 +3617,6 @@ show_checkrawtx(string raw_tx_data, string action)
         }
 
     }
-
-    map<string, string> partials
-    {
-      {"tx_details", template_file["tx_details"]},
-    };
 
     // render the page
     return mstch::render(full_page, context, partials);
@@ -3997,7 +3964,7 @@ show_checkrawkeyimgs(string raw_data, string viewkey_str)
     context.insert({"address"        , REMOVE_HASH_BRACKETS(
             xmreg::print_address(address_info, nettype))});
     context.insert({"viewkey"        , REMOVE_HASH_BRACKETS(
-            fmt::format("{:s}", pod_to_hex(unwrap(unwrap(prv_view_key)))))});
+            fmt::format("{:s}", epee::string_tools::pod_to_hex(unwrap(unwrap(prv_view_key)))))});
     context.insert({"has_total_arq"  , false});
     context.insert({"total_arq"      , string{}});
     context.insert({"key_imgs"       , mstch::array{}});
@@ -4021,7 +3988,7 @@ show_checkrawkeyimgs(string raw_data, string viewkey_str)
 
         mstch::map key_img_info {
                 {"key_no"              , fmt::format("{:03d}", n)},
-                {"key_image"           , pod_to_hex(key_image)},
+                {"key_image"           , epee::string_tools::pod_to_hex(key_image)},
                 {"signature"           , fmt::format("{:s}", signature)},
                 {"address"             , xmreg::print_address(
                                             address_info, nettype)},
@@ -4130,7 +4097,7 @@ show_checkcheckrawoutput(string raw_data, string viewkey_str)
 
     context.insert({"address"        , REMOVE_HASH_BRACKETS(
             xmreg::print_address(address_info, nettype))});
-    context.insert({"viewkey"        , pod_to_hex(unwrap(unwrap(prv_view_key)))});
+    context.insert({"viewkey"        , epee::string_tools::pod_to_hex(unwrap(unwrap(prv_view_key)))});
     context.insert({"has_total_arq"  , false});
     context.insert({"total_arq"      , string{}});
     context.insert({"output_keys"    , mstch::array{}});
@@ -4461,7 +4428,7 @@ search_txs(vector<transaction> txs, const string& search_text)
 
         tx_details txd = get_tx_details(tx);
 
-        string tx_hash_str = pod_to_hex(txd.hash);
+        string tx_hash_str = epee::string_tools::pod_to_hex(txd.hash);
 
         // check if any key_image matches the search_text
 
@@ -4469,7 +4436,7 @@ search_txs(vector<transaction> txs, const string& search_text)
                 find_if(begin(txd.input_key_imgs), end(txd.input_key_imgs),
                         [&](const txin_to_key &key_img)
                         {
-                            return pod_to_hex(key_img.k_image) == search_text;
+                            return epee::string_tools::pod_to_hex(key_img.k_image) == search_text;
                         });
 
         if (it1 != txd.input_key_imgs.end())
@@ -4479,21 +4446,21 @@ search_txs(vector<transaction> txs, const string& search_text)
 
         // check if  tx_public_key matches the search_text
 
-        if (pod_to_hex(txd.pk) == search_text)
+        if (epee::string_tools::pod_to_hex(txd.pk) == search_text)
         {
             tx_hashes["tx_public_keys"].push_back(tx_hash_str);
         }
 
         // check if  payments_id matches the search_text
 
-        if (pod_to_hex(txd.payment_id) == search_text)
+        if (epee::string_tools::pod_to_hex(txd.payment_id) == search_text)
         {
             tx_hashes["payment_id"].push_back(tx_hash_str);
         }
 
         // check if  encrypted_payments_id matches the search_text
 
-        if (pod_to_hex(txd.payment_id8) == search_text)
+        if (epee::string_tools::pod_to_hex(txd.payment_id8) == search_text)
         {
             tx_hashes["encrypted_payments_id"].push_back(tx_hash_str);
         }
@@ -4504,7 +4471,7 @@ search_txs(vector<transaction> txs, const string& search_text)
                 find_if(begin(txd.output_pub_keys), end(txd.output_pub_keys),
                         [&](const pair<txout_to_key, uint64_t> &tx_out_pk)
                         {
-                            return pod_to_hex(tx_out_pk.first.key) == search_text;
+                            return epee::string_tools::pod_to_hex(tx_out_pk.first.key) == search_text;
                         });
 
         if (it2 != txd.output_pub_keys.end())
@@ -4626,12 +4593,6 @@ show_search_results(const string &search_text,
     // add header and footer
     string full_page = template_file["search_results"];
 
-    map<string, string> partials
-    {
-      {"tx_table_head", template_file["tx_table_header"]},
-      {"tx_table_row", template_file["tx_table_row"]},
-    };
-
     add_css_style(context);
 
     // render the page
@@ -4720,7 +4681,7 @@ json_transaction(string tx_hash_str)
     for (const auto &output: txd.output_pub_keys)
     {
         outputs.push_back(json {
-                {"public_key", pod_to_hex(output.first.key)},
+                {"public_key", epee::string_tools::pod_to_hex(output.first.key)},
                 {"amount"    , output.second}
         });
     }
@@ -4758,7 +4719,7 @@ json_transaction(string tx_hash_str)
         }
 
         inputs.push_back(json {
-                {"key_image"  , pod_to_hex(in_key.k_image)},
+                {"key_image"  , epee::string_tools::pod_to_hex(in_key.k_image)},
                 {"amount"     , in_key.amount},
                 {"mixins"     , json {}}
         });
@@ -4768,7 +4729,7 @@ json_transaction(string tx_hash_str)
         for (const output_data_t &output_data: outputs)
         {
             mixins.push_back(json {
-                    {"public_key"  , pod_to_hex(output_data.pubkey)},
+                    {"public_key"  , epee::string_tools::pod_to_hex(output_data.pubkey)},
                     {"block_no"    , output_data.height},
             });
         }
@@ -5066,7 +5027,7 @@ json_block(string block_no_or_hash)
     j_data = json {
             {"block_height"  , block_height},
             {"diff"          , blk_diff},
-            {"hash"          , pod_to_hex(blk_hash)},
+            {"hash"          , epee::string_tools::pod_to_hex(blk_hash)},
             {"timestamp"     , blk.timestamp},
             {"timestamp_utc" , xmreg::timestamp_to_str_gm(blk.timestamp)},
             {"block_height"  , block_height},
@@ -5263,7 +5224,7 @@ json_transactions(string _page, string _limit)
 
         j_blocks.push_back(json {
                 {"height"       , i},
-                {"hash"         , pod_to_hex(blk_hash)},
+                {"hash"         , epee::string_tools::pod_to_hex(blk_hash)},
                 {"age"          , age.first},
                 {"diff"         , blk_diff},
                 {"size"         , blk_size},
@@ -5592,7 +5553,7 @@ json_outputs(string tx_hash_str,
 
     public_key pub_key = tx_prove ? address_info.address.m_view_public_key : txd.pk;
 
-    //cout << "txd.pk: " << pod_to_hex(txd.pk) << endl;
+    //cout << "txd.pk: " << epee::string_tools::pod_to_hex(txd.pk) << endl;
 
     if (!generate_key_derivation(pub_key, prv_view_key, derivation))
     {
@@ -5675,7 +5636,7 @@ json_outputs(string tx_hash_str,
         }  // if (mine_output && tx.version == 2)
 
         j_outptus.push_back(json {
-                {"output_pubkey", pod_to_hex(outp.first.key)},
+                {"output_pubkey", epee::string_tools::pod_to_hex(outp.first.key)},
                 {"amount"       , outp.second},
                 {"match"        , mine_output},
                 {"output_idx"   , output_idx},
@@ -5688,9 +5649,9 @@ json_outputs(string tx_hash_str,
     // return parsed values. can be use to double
     // check if submited data in the request
     // matches to what was used to produce response.
-    j_data["tx_hash"]  = pod_to_hex(txd.hash);
+    j_data["tx_hash"]  = epee::string_tools::pod_to_hex(txd.hash);
     j_data["address"]  = REMOVE_HASH_BRACKETS(xmreg::print_address(address_info, nettype));
-    j_data["viewkey"]  = pod_to_hex(unwrap(unwrap(prv_view_key)));
+    j_data["viewkey"]  = epee::string_tools::pod_to_hex(unwrap(unwrap(prv_view_key)));
     j_data["tx_prove"] = tx_prove;
 
     j_response["status"] = "success";
@@ -5872,7 +5833,7 @@ json_outputsblocks(string _limit,
     // check if submited data in the request
     // matches to what was used to produce response.
     j_data["address"]  = REMOVE_HASH_BRACKETS(xmreg::print_address(address_info, nettype));
-    j_data["viewkey"]  = pod_to_hex(unwrap(unwrap(prv_view_key)));
+    j_data["viewkey"]  = epee::string_tools::pod_to_hex(unwrap(unwrap(prv_view_key)));
     j_data["limit"]    = _limit;
     j_data["height"]   = height;
     j_data["mempool"]  = in_mempool_aswell;
@@ -6019,12 +5980,12 @@ get_payment_id_as_string(
     {
         if (mcore->get_device()->decrypt_payment_id(decrypted_payment_id8, txd.pk, prv_view_key))
         {
-            payment_id = pod_to_hex(decrypted_payment_id8);
+            payment_id = epee::string_tools::pod_to_hex(decrypted_payment_id8);
         }
     }
     else if(txd.payment_id != null_hash)
     {
-        payment_id = pod_to_hex(txd.payment_id);
+        payment_id = epee::string_tools::pod_to_hex(txd.payment_id);
     }
 
     return payment_id;
@@ -6128,7 +6089,7 @@ find_our_outputs(
                     if (!r)
                     {
                         error_msg = "Cant decode ringct for tx: "
-                                                + pod_to_hex(txd.hash);
+                                                + epee::string_tools::pod_to_hex(txd.hash);
                         return false;
                     }
 
@@ -6144,12 +6105,12 @@ find_our_outputs(
                 string payment_id_str = get_payment_id_as_string(txd, prv_view_key);
 
                 j_outptus.push_back(json {
-                        {"output_pubkey" , pod_to_hex(outp.first.key)},
+                        {"output_pubkey" , epee::string_tools::pod_to_hex(outp.first.key)},
                         {"amount"        , outp.second},
                         {"block_no"      , block_no},
                         {"in_mempool"    , is_mempool},
                         {"output_idx"    , output_idx},
-                        {"tx_hash"       , pod_to_hex(txd.hash)},
+                        {"tx_hash"       , epee::string_tools::pod_to_hex(txd.hash)},
                         {"payment_id"    , payment_id_str}
                 });
             }
@@ -6168,19 +6129,20 @@ get_tx_json(const transaction &tx, const tx_details &txd)
 {
 
     json j_tx {
-            {"tx_hash"     , pod_to_hex(txd.hash)},
+            {"tx_hash"     , epee::string_tools::pod_to_hex(txd.hash)},
             {"tx_fee"      , txd.fee},
             {"mixin"       , txd.mixin_no},
             {"tx_size"     , txd.size},
             {"arq_outputs" , txd.arq_outputs},
             {"arq_inputs"  , txd.arq_inputs},
             {"tx_version"  , static_cast<uint64_t>(txd.version)},
+            {"tx_type"     , string(cryptonote::transaction::type_to_string(tx.tx_type))},
             {"rct_type"    , tx.rct_signatures.type},
             {"coinbase"    , is_coinbase(tx)},
             {"mixin"       , txd.mixin_no},
             {"extra"       , txd.get_extra_str()},
-            {"payment_id"  , (txd.payment_id  != null_hash  ? pod_to_hex(txd.payment_id)  : "")},
-            {"payment_id8" , (txd.payment_id8 != null_hash8 ? pod_to_hex(txd.payment_id8) : "")},
+            {"payment_id"  , (txd.payment_id  != null_hash  ? epee::string_tools::pod_to_hex(txd.payment_id)  : "")},
+            {"payment_id8" , (txd.payment_id8 != null_hash8 ? epee::string_tools::pod_to_hex(txd.payment_id8) : "")},
     };
 
     return j_tx;
@@ -6265,7 +6227,7 @@ std::string extract_sn_pubkey(const std::vector<uint8_t> &tx_extra)
   crypto::public_key snode_key;
   if (get_service_node_pubkey_from_tx_extra(tx_extra, snode_key))
   {
-    return pod_to_hex(snode_key);
+    return epee::string_tools::pod_to_hex(snode_key);
   }
   else
   {
@@ -6317,7 +6279,7 @@ construct_tx_context(transaction tx, uint16_t with_ring_signatures = 0)
 
     const crypto::hash &tx_hash = txd.hash;
 
-    string tx_hash_str = pod_to_hex(tx_hash);
+    string tx_hash_str = epee::string_tools::pod_to_hex(tx_hash);
 
     uint64_t tx_blk_height {0};
 
@@ -6359,8 +6321,8 @@ construct_tx_context(transaction tx, uint16_t with_ring_signatures = 0)
     }
 
     // payments id. both normal and encrypted (payment_id8)
-    string pid_str   = pod_to_hex(txd.payment_id);
-    string pid8_str  = pod_to_hex(txd.payment_id8);
+    string pid_str   = epee::string_tools::pod_to_hex(txd.payment_id);
+    string pid8_str  = epee::string_tools::pod_to_hex(txd.payment_id8);
 
 
     string tx_json = obj_to_json_str(tx);
@@ -6378,7 +6340,7 @@ construct_tx_context(transaction tx, uint16_t with_ring_signatures = 0)
             {"stagenet"              , stagenet},
             {"tx_hash"               , tx_hash_str},
             {"tx_prefix_hash"        , string{}},
-            {"tx_pub_key"            , pod_to_hex(txd.pk)},
+            {"tx_pub_key"            , epee::string_tools::pod_to_hex(txd.pk)},
             {"blk_height"            , tx_blk_height_str},
             {"tx_blk_height"         , tx_blk_height},
             {"tx_size"               , fmt::format("{:0.4f}", tx_size)},
@@ -6423,7 +6385,7 @@ construct_tx_context(transaction tx, uint16_t with_ring_signatures = 0)
     string add_tx_pub_keys;
 
     for (auto const &apk: txd.additional_pks)
-        add_tx_pub_keys += pod_to_hex(apk) + ";";
+        add_tx_pub_keys += epee::string_tools::pod_to_hex(apk) + ";";
 
     context["add_tx_pub_keys"] = add_tx_pub_keys;
 
@@ -6507,7 +6469,7 @@ construct_tx_context(transaction tx, uint16_t with_ring_signatures = 0)
         }
 
         inputs.push_back(mstch::map {
-                {"in_key_img"   , pod_to_hex(in_key.k_image)},
+                {"in_key_img"   , epee::string_tools::pod_to_hex(in_key.k_image)},
                 {"amount"       , xmreg::arq_amount_to_str(in_key.amount)},
                 {"input_idx"    , fmt::format("{:02d}", input_idx)},
                 {"mixins"       , mstch::array{}},
@@ -6606,8 +6568,8 @@ construct_tx_context(transaction tx, uint16_t with_ring_signatures = 0)
 
                 mixins.push_back(mstch::map {
                         {"mix_blk",        fmt::format("{:08d}", output_data.height)},
-                        {"mix_pub_key",    pod_to_hex(output_data.pubkey)},
-                        {"mix_tx_hash",    pod_to_hex(tx_out_idx.first)},
+                        {"mix_pub_key",    epee::string_tools::pod_to_hex(output_data.pubkey)},
+                        {"mix_tx_hash",    epee::string_tools::pod_to_hex(tx_out_idx.first)},
                         {"mix_out_indx",   tx_out_idx.second},
                         {"mix_timestamp",  xmreg::timestamp_to_str_gm(blk.timestamp)},
                         {"mix_age",        mixin_age.first},
@@ -6626,7 +6588,7 @@ construct_tx_context(transaction tx, uint16_t with_ring_signatures = 0)
             {
                 mixins.push_back(mstch::map {
                         {"mix_blk",        fmt::format("{:08d}", output_data.height)},
-                        {"mix_pub_key",    pod_to_hex(output_data.pubkey)},
+                        {"mix_pub_key",    epee::string_tools::pod_to_hex(output_data.pubkey)},
                         {"mix_idx",        fmt::format("{:02d}", count)},
                         {"mix_is_it_real", false}, // a placeholder for future
                 });
@@ -6667,7 +6629,7 @@ construct_tx_context(transaction tx, uint16_t with_ring_signatures = 0)
         context["timescales_scale"] = fmt::format("{:0.2f}",
                                                   mixins_timescales.second / 3600.0 / 24.0); // in days
 
-        context["tx_prefix_hash"] = pod_to_hex(get_transaction_prefix_hash(tx));
+        context["tx_prefix_hash"] = epee::string_tools::pod_to_hex(get_transaction_prefix_hash(tx));
 
     }
 
@@ -6734,7 +6696,7 @@ construct_tx_context(transaction tx, uint16_t with_ring_signatures = 0)
         outputs_arq_sum += outp.second;
 
         outputs.push_back(mstch::map {
-                {"out_pub_key"           , pod_to_hex(outp.first.key)},
+                {"out_pub_key"           , epee::string_tools::pod_to_hex(outp.first.key)},
                 {"amount"                , xmreg::arq_amount_to_str(outp.second)},
                 {"amount_idx"            , out_amount_index_str},
                 {"num_outputs"           , num_outputs_amount},
@@ -6849,31 +6811,12 @@ get_tx_details(const transaction &tx,
         }
     }
 
-    txd.pID = '-'; // no payment ID
-
     get_payment_id(tx, txd.payment_id, txd.payment_id8);
 
     // get tx size in bytes
     txd.size = get_object_blobsize(tx);
 
     txd.extra = tx.extra;
-
-    if (txd.payment_id != null_hash)
-    {
-        txd.payment_id_as_ascii = std::string(txd.payment_id.data, crypto::HASH_SIZE);
-        txd.pID = 'l'; // legacy payment id
-    }
-    else if (txd.payment_id8 != null_hash8)
-    {
-        txd.pID = 'e'; // encrypted payment id
-    }
-    else if (txd.additional_pks.empty() == false)
-    {
-        // if multioutput tx have additional public keys,
-        // mark it so that it represents that it has at least
-        // one sub-address
-        txd.pID = 's';
-    }
 
     // get tx signatures for each input
     txd.signatures = tx.signatures;
@@ -7059,7 +7002,7 @@ get_arqma_network_info(json& j_info)
        {"grey_peerlist_size"        , local_copy_network_info.grey_peerlist_size},
        {"testnet"                   , local_copy_network_info.nettype == cryptonote::network_type::TESTNET},
        {"stagenet"                  , local_copy_network_info.nettype == cryptonote::network_type::STAGENET},
-       {"top_block_hash"            , pod_to_hex(local_copy_network_info.top_block_hash)},
+       {"top_block_hash"            , epee::string_tools::pod_to_hex(local_copy_network_info.top_block_hash)},
        {"cumulative_difficulty"     , local_copy_network_info.cumulative_difficulty},
        {"block_size_limit"          , local_copy_network_info.block_size_limit},
        {"block_size_median"         , local_copy_network_info.block_size_median},
@@ -7111,7 +7054,7 @@ are_absolute_offsets_good(
         {
             offset_too_large = true;
             cerr << "Absolute offset (" << o << ") of an output in a key image "
-                 << pod_to_hex(in_key.k_image)
+                 << epee::string_tools::pod_to_hex(in_key.k_image)
                  << " (ring member no: " << offset_idx << ") "
                  << "for amount "  << in_key.amount
                  << " is too large. There are only "
@@ -7189,8 +7132,9 @@ get_tx(string const &tx_hash_str,
 }
 
 public:
-    string get_css() { return template_file["css_styles"]; }
-    string get_manifest() { return template_file["site_manifest"]; }
+  string get_css() { return template_file["css_styles"]; }
+  string get_manifest() { return template_file["site_manifest"]; }
+
 };
 }
 

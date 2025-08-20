@@ -64,19 +64,7 @@ if(EXISTS ${ARQMA_BUILD_DIR}/src/cryptonote_basic/libcryptonote_format_utils_bas
   set_property(TARGET cryptonote_format_utils_basic PROPERTY IMPORTED_LOCATION ${ARQMA_BUILD_DIR}/src/cryptonote_basic/libcryptonote_format_utils_basic.a)
 endif()
 
-if(EXISTS ${ARQMA_BUILD_DIR}/external/libzmq/lib/libzmq.a)
-  message(STATUS FindArqma " found in-tree libzmq.a")
-  add_library(libzmq STATIC IMPORTED)
-  set_property(TARGET libzmq PROPERTY IMPORTED_LOCATION ${ARQMA_BUILD_DIR}/external/libzmq/lib/libzmq.a)
-endif()
-
-if(EXISTS ${ARQMA_BUILD_DIR}/external/unbound/libunbound.a)
-  message(STATUS FindArqma " found in-tree libunbound.a")
-  add_library(libunbound STATIC IMPORTED)
-  set_property(TARGET libunbound PROPERTY IMPORTED_LOCATION ${ARQMA_BUILD_DIR}/external/unbound/libunbound.a)
-endif()
-
-message(STATUS ${ARQMA_SOURCE_DIR}/build/Linux/${ARQMA_BRANCH})
+message(STATUS ${ARQMA_SOURCE_DIR}/build) #/Linux/${ARQMA_BRANCH})
 
 # include arqma headers
 include_directories(
@@ -84,9 +72,8 @@ include_directories(
   ${ARQMA_SOURCE_DIR}/src/crypto
   ${ARQMA_SOURCE_DIR}/external
   ${ARQMA_SOURCE_DIR}/external/randomarq/src
-  ${ARQMA_SOURCE_DIR}/build/Linux/${ARQMA_BRANCH}/release
-  ${ARQMA_SOURCE_DIR}/build/Linux/${ARQMA_BRANCH}/release/external/libzmq/include
-  ${ARQMA_SOURCE_DIR}/external/unbound/libunbound
+  ${ARQMA_SOURCE_DIR}/build #/Linux/${ARQMA_BRANCH}
+  #${ARQMA_SOURCE_DIR}/build/Linux/${ARQMA_BRANCH}/release/external/libzmq/include
   ${ARQMA_SOURCE_DIR}/external/easylogging++
   ${ARQMA_SOURCE_DIR}/contrib/epee/include
   ${ARQMA_SOURCE_DIR}/lmdb/liblmdb)
