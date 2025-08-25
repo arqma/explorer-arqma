@@ -43,7 +43,7 @@
     <h2>Service Node Status</h2>
     <div class="TitleDivider"></div>
     {{#activation_height}}
-    <p class="sn-active">Registered, staked, and active on the network since block {{activation_height}}.</p>
+    <p class="sn-active">Registered, staked, and active on the network since block <a href="/block/{{activation_height}}">{{activation_height}}.</a></p>
     {{/activation_height}}
     {{#decommission_height}}
     <p class="sn-decomm"><span class="omg">Decommissioned</span>: this service node is

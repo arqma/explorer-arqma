@@ -29,7 +29,10 @@ project(${PROJECT_NAME})
 set(CMAKE_C_STANDARD 11)
 set(CMAKE_CXX_STANDARD 17)
 
-#set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -g")
+#set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -fsanitize=address")
+#set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fsanitize=address")
+set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -g")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -g")
 
 if(WIN32)
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wa,-mbig-obj -O3")
@@ -66,7 +69,7 @@ find_package(Arqma)
 cmake_policy(SET CMP0093 NEW)
 
 # find boost
-find_package(Boost 1.68.0 QUIET REQUIRED COMPONENTS system filesystem thread date_time chrono regex serialization program_options)
+find_package(Boost 1.68.0 COMPONENTS system filesystem thread date_time chrono regex serialization program_options REQUIRED)
 
 #info https://github.com/arsenm/sanitizers-cmake
 find_package(Sanitizers)
@@ -121,14 +124,14 @@ include_directories(${ZMQ_INCLUDE_DIRS})
 include_directories(${UNBOUND_INCLUDE_DIRS})
 
 # include boost headers
-include_directories(SYSTEM ${Boost_INCLUDE_DIRS})
+include_directories(${Boost_INCLUDE_DIRS})
 
 # include arqma
 include_directories(${ARQMA_SOURCE_DIR}/build) #/Linux/${ARQMA_BRANCH})
 
 include_directories("ext/mstch/include")
 include_directories("ext/mstch/include/mstch")
-include_directories("ext/crow")
+#include_directories("ext/crow")
 
 # add ext/ subfolder
 add_subdirectory(ext)
@@ -162,6 +165,7 @@ set(LIBRARIES
         cryptonote_basic
         cryptonote_protocol
         cryptonote_format_utils_basic
+        arqnet
         blockchain_db
         blocks
         net
@@ -185,7 +189,6 @@ set(LIBRARIES
         ${Boost_LIBRARIES}
         libunbound
         pthread
-        curl
         crypto
         ssl)
 

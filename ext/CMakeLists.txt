@@ -1,10 +1,6 @@
 # first build mstch template library
 add_subdirectory("mstch")
 
-
-# now build myext library from other files
-project(myext)
-
 set(SOURCE_HEADERS
         minicsv.h
         fmt/format.h)
