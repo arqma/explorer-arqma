@@ -1,8 +1,10 @@
+#define CROW_MAIN
 #define CROW_ENABLE_SSL
+//#define CROW_USE_BOOST
 
 #include "src/page.h"
 
-#include "ext/crow/crow.h"
+#include "ext/crow_all.h"
 #include "src/CmdLineOptions.h"
 #include "src/MicroCore.h"
 
@@ -169,10 +171,10 @@ main(int ac, const char* av[])
 
     string daemon_url {*daemon_url_opt};
 
-    if (testnet && daemon_url == "http://127.0.0.1:19994")
-        daemon_url = "http://127.0.0.1:29994";
-    if (stagenet && daemon_url == "http://127.0.0.1:19994")
-        daemon_url = "http://127.0.0.1:39994";
+    if (testnet && daemon_url == "127.0.0.1:19994")
+        daemon_url = "127.0.0.1:29994";
+    if (stagenet && daemon_url == "127.0.0.1:19994")
+        daemon_url = "127.0.0.1:39994";
 
     uint64_t mempool_info_timeout {5000};
 
@@ -279,12 +281,12 @@ main(int ac, const char* av[])
     });
 
     CROW_ROUTE(app, "/page/<uint>")
-    ([&](size_t page_no) {
+    ([&](uint64_t page_no) {
         return myxmr::htmlresponse(arqblocks.index2(page_no));
     });
 
     CROW_ROUTE(app, "/block/<uint>")
-    ([&](size_t block_height) {
+    ([&](uint64_t block_height) {
         return myxmr::htmlresponse(arqblocks.show_block(block_height));
     });
 
@@ -311,12 +313,12 @@ main(int ac, const char* av[])
         });
 
         CROW_ROUTE(app, "/blockhex/<uint>")
-        ([&](size_t block_height) {
+        ([&](uint64_t block_height) {
             return crow::response(arqblocks.show_block_hex(block_height, false));
         });
 
         CROW_ROUTE(app, "/blockhexcomplete/<uint>")
-        ([&](size_t block_height) {
+        ([&](uint64_t block_height) {
             return crow::response(arqblocks.show_block_hex(block_height, true));
         });
 

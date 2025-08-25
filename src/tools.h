@@ -72,11 +72,11 @@ struct outputs_visitor
 
 template <typename T>
 bool
-parse_str_secret_key(const string &key_str, T &secret_key);
+parse_str_secret_key(const string& key_str, T& secret_key);
 
 template <typename T>
 bool
-parse_str_secret_key(const string &key_str, std::vector<T> &secret_keys)
+parse_str_secret_key(const string& key_str, std::vector<T>& secret_keys)
 {
     const size_t num_keys = key_str.size() / 64;
 
@@ -259,7 +259,7 @@ decode_ringct(const rct::rctSig &rv,
 bool
 url_decode(const std::string &in, std::string &out);
 
-map<std::string, std::string> parse_crow_post_data(const string &req_body);
+map<std::string, std::string> parse_crow_post_data(const string& req_body);
 
 // from wallet2::decrypt
 string

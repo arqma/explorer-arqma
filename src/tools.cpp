@@ -17,7 +17,7 @@ namespace xmreg
  */
 template <typename T>
 bool
-parse_str_secret_key(const string &key_str, T &secret_key)
+parse_str_secret_key(const string& key_str, T& secret_key)
 {
 
     // hash and keys have same structure, so to parse string of
@@ -42,9 +42,9 @@ parse_str_secret_key(const string &key_str, T &secret_key)
 }
 
 // explicit instantiations of get template function
-template bool parse_str_secret_key<crypto::secret_key>(const string &key_str, crypto::secret_key &secret_key);
-template bool parse_str_secret_key<crypto::public_key>(const string &key_str, crypto::public_key &secret_key);
-template bool parse_str_secret_key<crypto::hash>(const string &key_str, crypto::hash &secret_key);
+template bool parse_str_secret_key<crypto::secret_key>(const string& key_str, crypto::secret_key& secret_key);
+template bool parse_str_secret_key<crypto::public_key>(const string& key_str, crypto::public_key& secret_key);
+template bool parse_str_secret_key<crypto::hash>(const string& key_str, crypto::hash& secret_key);
 
 /**
 * Get transaction tx using given tx hash. Hash is represent as string here,

@@ -8,13 +8,7 @@
 #include "mstch/mstch.hpp"
 
 #include "arqma_headers.h"
-#include "randomx.h"
-#include "common.hpp"
-#include "blake2/blake2.h"
-#include "virtual_machine.hpp"
-#include "program.hpp"
-#include "aes_hash.hpp"
-#include "assembly_generator_x86.hpp"
+//#include "randomx.h"
 
 #include "../gen/version.h"
 
@@ -25,7 +19,7 @@
 #include "CurrentBlockchainStatus.h"
 #include "MempoolStatus.h"
 
-#include "../ext/crow/crow.h"
+#include "../ext/crow_all.h"
 
 #include "../ext/json.hpp"
 #include "../ext/mstch/src/visitor/render_node.hpp"
@@ -1438,13 +1432,6 @@ show_block(uint64_t _blk_height)
         return fmt::format("Cant get block {:d}!", _blk_height);
     }
 
-    uint64_t blk_diff;
-    if (!mcore->get_diff_at_height(_blk_height, blk_diff))
-    {
-        cerr << "Cant get block diff: " << _blk_height << endl;
-        return fmt::format("Cant get block diff {:d}!", _blk_height);
-    }
-
     // get block's hash
     crypto::hash blk_hash = core_storage->get_block_id_by_height(_blk_height);
 
@@ -1511,7 +1498,6 @@ show_block(uint64_t _blk_height)
             {"stagenet"             , stagenet},
             {"blk_hash"             , blk_hash_str},
             {"blk_height"           , _blk_height},
-            {"diff"                 , blk_diff},
             {"blk_timestamp"        , blk_timestamp},
             {"blk_timestamp_epoch"  , blk.timestamp},
             {"prev_hash"            , prev_hash_str},
@@ -1598,23 +1584,22 @@ string
 show_block(string _blk_hash)
 {
     crypto::hash blk_hash;
-
-    if (!xmreg::parse_str_secret_key(_blk_hash, blk_hash))
-    {
-        cerr << "Cant parse blk hash: " << blk_hash << endl;
-        return fmt::format("Cant get block {:s} due to block hash parse error!", blk_hash);
-    }
-
+    block blk;
     uint64_t blk_height;
 
-    if (core_storage->have_block(blk_hash))
+    if (_blk_hash.length() <= 10)
     {
-        blk_height = core_storage->get_db().get_block_height(blk_hash);
+      blk_height = boost::lexical_cast<uint64_t>(_blk_hash);
     }
-    else
+    else if (_blk_hash.length() == 64)
     {
-        cerr << "Cant get block: " << blk_hash << endl;
-        return fmt::format("Cant get block {:s}", blk_hash);
+      if (!xmreg::parse_str_secret_key(_blk_hash, blk_hash))
+      {
+        cerr << "Cant parse blk hash: " << blk_hash << endl;
+        return fmt::format("Cant get block {:s} due to block hash parse error!", blk_hash);
+      }
+
+      blk_height = core_storage->get_db().get_block_height(blk_hash);
     }
 
     return show_block(blk_height);
@@ -4973,13 +4958,6 @@ json_block(string block_no_or_hash)
     // get block size in bytes
     uint64_t blk_size = core_storage->get_db().get_block_weight(block_height);
 
-    uint64_t blk_diff;
-    if (!mcore->get_diff_at_height(block_height, blk_diff))
-    {
-        j_data["title"] = fmt::format("Cant get block diff {:d}!", block_height);
-        return j_response;
-    }
-
     // miner reward tx
     transaction coinbase_tx = blk.miner_tx;
 
@@ -5026,7 +5004,6 @@ json_block(string block_no_or_hash)
 
     j_data = json {
             {"block_height"  , block_height},
-            {"diff"          , blk_diff},
             {"hash"          , epee::string_tools::pod_to_hex(blk_hash)},
             {"timestamp"     , blk.timestamp},
             {"timestamp_utc" , xmreg::timestamp_to_str_gm(blk.timestamp)},
@@ -5207,13 +5184,6 @@ json_transactions(string _page, string _limit)
             return j_response;
         }
 
-        uint64_t blk_diff;
-        if (!mcore->get_diff_at_height(i, blk_diff))
-        {
-            cerr << "Cant get block diff: " << i << endl;
-            return fmt::format("Cant get block diff {:d}!", i);
-        }
-
         // get block size in bytes
         double blk_size = core_storage->get_db().get_block_weight(i);
 
@@ -5226,7 +5196,6 @@ json_transactions(string _page, string _limit)
                 {"height"       , i},
                 {"hash"         , epee::string_tools::pod_to_hex(blk_hash)},
                 {"age"          , age.first},
-                {"diff"         , blk_diff},
                 {"size"         , blk_size},
                 {"timestamp"    , blk.timestamp},
                 {"timestamp_utc", xmreg::timestamp_to_str_gm(blk.timestamp)},
