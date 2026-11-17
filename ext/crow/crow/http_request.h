@@ -56,13 +56,13 @@ namespace crow
         template<typename CompletionHandler>
         void post(CompletionHandler handler)
         {
-            io_service->post(handler);
+            boost::asio::post(*io_service, std::move(handler));
         }
 
         template<typename CompletionHandler>
         void dispatch(CompletionHandler handler)
         {
-            io_service->dispatch(handler);
+            boost::asio::dispatch(*io_service, std::move(handler));
         }
 
     };

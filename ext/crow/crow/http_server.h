@@ -27,7 +27,7 @@ namespace crow
     {
     public:
     Server(Handler* handler, std::string bindaddr, uint16_t port, std::tuple<Middlewares...>* middlewares = nullptr, uint16_t concurrency = 1, typename Adaptor::context* adaptor_ctx = nullptr)
-            : acceptor_(io_service_, tcp::endpoint(boost::asio::ip::address::from_string(bindaddr), port)),
+            : acceptor_(io_service_, tcp::endpoint(boost::asio::ip::make_address(bindaddr), port)),
             signals_(io_service_, SIGINT, SIGTERM),
             tick_timer_(io_service_),
             handler_(handler),
@@ -197,7 +197,7 @@ namespace crow
                 {
                     if (!ec)
                     {
-                        is.post([p]
+                        boost::asio::post(is, [p]
                         {
                             p->start();
                         });

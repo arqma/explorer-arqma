@@ -373,7 +373,8 @@ rpccalls::get_dynamic_per_kb_fee_estimate(
         return false;
     }
 
-    fee = resp_t.result.fee;
+    // Newer daemons return fee_per_byte; explorer UI still shows per-kiB.
+    fee = resp_t.result.fee_per_byte * 1024;
 
     return true;
 }

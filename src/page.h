@@ -538,10 +538,10 @@ void generate_service_node_mapping(mstch::map &context, std::string name, bool o
     array.push_back(std::move(array_entry));
   }
 
-  context[name + "_size"] = entries.size();
+  context[name + "_size"] = static_cast<uint64_t>(entries.size());
   size_t more = entries.size() - array.size();
   if (more)
-    context[name + "_more"] = more;
+    context[name + "_more"] = static_cast<uint64_t>(more);
 }
 
 std::string
@@ -728,16 +728,16 @@ mstch::map get_quorum_state_context(uint64_t start_height, uint64_t end_height, 
       mstch::map quorum_part;
       quorum_part.emplace("quorum_height", entry.height);
       auto validators = gather_sn_data(entry.quorum.validators, pk2sninfo, group_display_limit);
-      quorum_part.emplace("quorum_validators_size", entry.quorum.validators.size());
+      quorum_part.emplace("quorum_validators_size", static_cast<uint64_t>(entry.quorum.validators.size()));
       if (validators.size() < entry.quorum.validators.size())
-        quorum_part.emplace("quorum_validators_more", entry.quorum.validators.size() - validators.size());
+        quorum_part.emplace("quorum_validators_more", static_cast<uint64_t>(entry.quorum.validators.size() - validators.size()));
       group_display_limit -= validators.size();
       quorum_part.emplace("quorum_validators", std::move(validators));
 
       auto workers = gather_sn_data(entry.quorum.workers, pk2sninfo, group_display_limit);
-      quorum_part.emplace("quorum_workers_size", entry.quorum.workers.size());
+      quorum_part.emplace("quorum_workers_size", static_cast<uint64_t>(entry.quorum.workers.size()));
       if (workers.size() < entry.quorum.workers.size())
-        quorum_part.emplace("quorum_workers_more", entry.quorum.workers.size() - workers.size());
+        quorum_part.emplace("quorum_workers_more", static_cast<uint64_t>(entry.quorum.workers.size() - workers.size()));
       quorum_part.emplace("quorum_workers", std::move(workers));
 
       if (qt == service_nodes::quorum_type::checkpointing)
@@ -749,7 +749,7 @@ mstch::map get_quorum_state_context(uint64_t start_height, uint64_t end_height, 
         break;
     }
     std::reverse(quorum_array.begin(), quorum_array.end());
-    page_context.emplace(quorum_type.second + "_quorum_array_size", quorum_array.size());
+    page_context.emplace(quorum_type.second + "_quorum_array_size", static_cast<uint64_t>(quorum_array.size()));
   }
   return page_context;
 }
@@ -810,7 +810,7 @@ std::string render_checkpoints_html(bool add_header_and_footer)
       signatures.push_back(std::move(sig_info));
       boost::get<mstch::map>(voter_signed[s.voter_index]).emplace("voter_signed", true);
     }
-    checkpoint.emplace("checkpoint_signatures_size", signatures.size());
+    checkpoint.emplace("checkpoint_signatures_size", static_cast<uint64_t>(signatures.size()));
     checkpoint.emplace("checkpoint_signatures", std::move(signatures));
     checkpoint.emplace("checkpoint_signed_by", std::move(voter_signed));
 
@@ -818,7 +818,7 @@ std::string render_checkpoints_html(bool add_header_and_footer)
   }
 
   mstch::map page_context {};
-  page_context.emplace("checkpoint_array_size", checkpoints.size());
+  page_context.emplace("checkpoint_array_size", static_cast<uint64_t>(checkpoints.size()));
   page_context.emplace("checkpoint_array", std::move(checkpoints));
 
   if (on_homepage)
@@ -1663,7 +1663,7 @@ show_service_node(const std::string &service_node_pubkey)
 
     if (!pending_stakes.empty())
     {
-      page_context["pending_stakes_size"] = pending_stakes.size();
+      page_context["pending_stakes_size"] = static_cast<uint64_t>(pending_stakes.size());
       page_context["pending_stakes"] = std::move(pending_stakes);
     }
   }

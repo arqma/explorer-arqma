@@ -110,12 +110,22 @@ struct map : public std::map<Key, Value>
 
 }
 
+#if defined(__APPLE__) && (defined(__LP64__) || defined(__aarch64__))
+// On Darwin LP64, size_t is unsigned long and distinct from uint64_t (unsigned long long).
+using node = boost::make_recursive_variant<
+    std::nullptr_t, std::string, int, double, bool, uint64_t, int64_t, uint32_t, std::size_t,
+    internal::lambda_t<boost::recursive_variant_>,
+    std::shared_ptr<internal::object_t<boost::recursive_variant_>>,
+    internal::map<std::string, boost::recursive_variant_>,
+    std::vector<boost::recursive_variant_>, boost::string_view>::type;
+#else
 using node = boost::make_recursive_variant<
     std::nullptr_t, std::string, int, double, bool, uint64_t, int64_t, uint32_t,
     internal::lambda_t<boost::recursive_variant_>,
     std::shared_ptr<internal::object_t<boost::recursive_variant_>>,
     internal::map<std::string, boost::recursive_variant_>,
     std::vector<boost::recursive_variant_>, boost::string_view>::type;
+#endif
 using object = internal::object_t<node>;
 using lambda = internal::lambda_t<node>;
 using map = internal::map<std::string, node>;
