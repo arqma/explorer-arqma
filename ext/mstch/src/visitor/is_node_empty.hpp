@@ -25,6 +25,24 @@ class is_node_empty: public boost::static_visitor<bool> {
     return value == 0;
   }
 
+  bool operator()(const uint64_t& value) const {
+    return value == 0;
+  }
+
+  bool operator()(const int64_t& value) const {
+    return value == 0;
+  }
+
+  bool operator()(const uint32_t& value) const {
+    return value == 0;
+  }
+
+#if defined(__APPLE__) && (defined(__LP64__) || defined(__aarch64__))
+  bool operator()(const std::size_t& value) const {
+    return value == 0;
+  }
+#endif
+
   bool operator()(const bool& value) const {
     return !value;
   }

@@ -35,21 +35,20 @@ if(WIN32)
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wa,-mbig-obj -O3")
 endif()
 
-# changed to comply with stagenet requirements
-# will need to be changed on release later on
-# along with other paths which had been changed as well
-set(ARQMA_DIR ~/arqma)
+# Default paths; override with -DARQMA_SOURCE_DIR= / -DARQMA_BUILD_DIR=
+set(ARQMA_DIR ~/arqma CACHE PATH "Legacy alias for ARQMA_SOURCE_DIR")
 set(ARQMA_BRANCH check)
-
-message(STATUS ARQMA_DIR ": ${ARQMA_DIR}")
 
 set(ARQMA_SOURCE_DIR ${ARQMA_DIR}
         CACHE PATH "Path to the root directory for Arqma")
+
+message(STATUS ARQMA_SOURCE_DIR ": ${ARQMA_SOURCE_DIR}")
 
 # set location of arqma build tree
 #set(ARQMA_BUILD_DIR ${ARQMA_SOURCE_DIR}/build/Linux/${ARQMA_BRANCH}/release
 set(ARQMA_BUILD_DIR ${ARQMA_SOURCE_DIR}/build/release
         CACHE PATH "Path to the build directory for Arqma")
+message(STATUS ARQMA_BUILD_DIR ": ${ARQMA_BUILD_DIR}")
 
 set(MY_CMAKE_DIR "${CMAKE_CURRENT_LIST_DIR}/cmake"
         CACHE PATH "The path to the cmake directory of the current project")
@@ -66,14 +65,20 @@ find_package(Arqma)
 cmake_policy(SET CMP0093 NEW)
 
 # find boost
-find_package(Boost 1.68.0 QUIET REQUIRED COMPONENTS system filesystem thread date_time chrono regex serialization program_options)
+# boost_system is header-only since Boost 1.69; keep filesystem and friends.
+find_package(Boost 1.68.0 QUIET REQUIRED COMPONENTS filesystem thread date_time chrono regex serialization program_options)
 
 #info https://github.com/arsenm/sanitizers-cmake
 find_package(Sanitizers)
 
 if(APPLE)
-  include_directories(/opt/homebrew/opt/openssl/include)
-  link_directories(/opt/homebrew/opt/openssl/lib)
+  # Prefer OpenSSL 3 to match the local arqmad linkage
+  set(_OPENSSL_ROOT /opt/homebrew/opt/openssl@3)
+  if(NOT EXISTS "${_OPENSSL_ROOT}")
+    set(_OPENSSL_ROOT /opt/homebrew/opt/openssl)
+  endif()
+  include_directories(${_OPENSSL_ROOT}/include)
+  link_directories(${_OPENSSL_ROOT}/lib)
   link_directories(/opt/homebrew/lib)
 endif()
 
@@ -85,10 +90,15 @@ target_link_libraries(libunbound INTERFACE PkgConfig::UNBOUND)
 set(sodium_USE_STATIC_LIBS ON)
 pkg_check_modules(SODIUM libsodium>=1.0.18 REQUIRED)
 pkg_check_modules(ZMQ libzmq>=4.3.2 REQUIRED)
-pkg_check_modules(UNWIND libunwind REQUIRED)
+# macOS ships unwind via the compiler runtime; Homebrew has no bottle for arm64.
+if(APPLE)
+  pkg_check_modules(UNWIND libunwind)
+else()
+  pkg_check_modules(UNWIND libunwind REQUIRED)
+endif()
 
+add_library(libunwind INTERFACE)
 if(UNWIND_FOUND)
-  add_library(libunwind INTERFACE)
   find_library(libunwind_link_libs NAMES ${UNWIND_LIBRARIES} PATHS ${UNWIND_LIBRARY_DIRS})
   target_link_libraries(libunwind INTERFACE ${libunwind_link_libs})
   target_include_directories(libunwind INTERFACE ${UNWIND_INCLUDE_DIRS})
@@ -123,8 +133,9 @@ include_directories(${UNBOUND_INCLUDE_DIRS})
 # include boost headers
 include_directories(SYSTEM ${Boost_INCLUDE_DIRS})
 
-# include arqma
-include_directories(${ARQMA_SOURCE_DIR}/build) #/Linux/${ARQMA_BRANCH})
+# include arqma (build dir has generated headers on some layouts)
+include_directories(${ARQMA_SOURCE_DIR}/build)
+include_directories(${ARQMA_BUILD_DIR})
 
 include_directories("ext/mstch/include")
 include_directories("ext/mstch/include/mstch")

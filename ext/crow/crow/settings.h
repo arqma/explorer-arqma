@@ -2,6 +2,16 @@
 // settings for crow
 // TODO - replace with runtime config. libucl?
 
+// Boost.Asio 1.70+ removed io_service; Crow still uses the old name.
+#include <boost/version.hpp>
+#include <boost/asio/io_context.hpp>
+#include <boost/asio/deadline_timer.hpp>
+#if BOOST_VERSION >= 107000
+namespace boost { namespace asio {
+  using io_service = io_context;
+}}
+#endif
+
 /* #ifdef - enables debug mode */
 //#define CROW_ENABLE_DEBUG
 

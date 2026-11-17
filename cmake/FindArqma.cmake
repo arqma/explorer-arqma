@@ -48,8 +48,24 @@ foreach(l ${LIBS})
 
   set(Arqma_${L}_LIBRARIES ${Arqma_${L}_LIBRARY})
   message(STATUS FindArqma " Arqma_${L}_LIBRARIES ${Arqma_${L}_LIBRARY}")
-  add_library(${l} STATIC IMPORTED)
-  set_property(TARGET ${l} PROPERTY IMPORTED_LOCATION ${Arqma_${L}_LIBRARIES})
+  if(Arqma_${L}_LIBRARY)
+    add_library(${l} STATIC IMPORTED)
+    set_property(TARGET ${l} PROPERTY IMPORTED_LOCATION ${Arqma_${L}_LIBRARIES})
+  elseif("${l}" STREQUAL "miniupnpc")
+    # Arqma trees often omit vendored miniupnpc; fall back to system/Homebrew.
+    find_library(Arqma_MINIUPNPC_SYSTEM NAMES miniupnpc)
+    if(Arqma_MINIUPNPC_SYSTEM)
+      message(STATUS FindArqma " using system miniupnpc ${Arqma_MINIUPNPC_SYSTEM}")
+      add_library(miniupnpc STATIC IMPORTED)
+      set_property(TARGET miniupnpc PROPERTY IMPORTED_LOCATION ${Arqma_MINIUPNPC_SYSTEM})
+      set(Arqma_MINIUPNPC_LIBRARY ${Arqma_MINIUPNPC_SYSTEM})
+      set(Arqma_MINIUPNPC_LIBRARIES ${Arqma_MINIUPNPC_SYSTEM})
+    else()
+      message(FATAL_ERROR "miniupnpc not found in Arqma build or system")
+    endif()
+  else()
+    message(FATAL_ERROR "Arqma library '${l}' not found under ${CMAKE_LIBRARY_PATH}")
+  endif()
 endforeach()
 
 if(EXISTS ${ARQMA_BUILD_DIR}/src/ringct/libringct_basic.a)
@@ -72,8 +88,9 @@ include_directories(
   ${ARQMA_SOURCE_DIR}/src/crypto
   ${ARQMA_SOURCE_DIR}/external
   ${ARQMA_SOURCE_DIR}/external/randomarq/src
-  ${ARQMA_SOURCE_DIR}/build #/Linux/${ARQMA_BRANCH}
-  #${ARQMA_SOURCE_DIR}/build/Linux/${ARQMA_BRANCH}/release/external/libzmq/include
+  ${ARQMA_SOURCE_DIR}/build
+  ${ARQMA_BUILD_DIR}
   ${ARQMA_SOURCE_DIR}/external/easylogging++
   ${ARQMA_SOURCE_DIR}/contrib/epee/include
+  ${ARQMA_SOURCE_DIR}/src/lmdb/liblmdb
   ${ARQMA_SOURCE_DIR}/lmdb/liblmdb)

@@ -42,4 +42,15 @@
 
 #include "string_coding.h"
 
+// Compatibility shims for explorer vs newer Arqma headers.
+namespace cryptonote
+{
+  using blobdata = std::string;
+
+  inline uint64_t get_tx_fee(const transaction& tx)
+  {
+    return get_tx_miner_fee(tx, false);
+  }
+}
+
 #endif //XMREG01_ARQMA_HEADERS_H_H

@@ -47,8 +47,16 @@ class render_node: public boost::static_visitor<std::string> {
   std::string operator()(const uint32_t& value) const {
      std::stringstream ss;
      ss << value;
-     return ss.str();
+    return ss.str();
   }
+
+#if defined(__APPLE__) && (defined(__LP64__) || defined(__aarch64__))
+  std::string operator()(const std::size_t& value) const {
+    std::stringstream ss;
+    ss << value;
+    return ss.str();
+  }
+#endif
 
   std::string operator()(const bool& value) const {
     return value ? "true" : "false";
